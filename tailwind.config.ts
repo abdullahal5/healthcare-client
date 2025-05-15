@@ -37,7 +37,7 @@ const config: Config = {
           DEFAULT: "#666f73",
           dark: "#3a3a3a",
           light: "#f8f8f8",
-          foreground: "#ffffff",
+          foreground: "#0f172a",
         },
         destructive: {
           DEFAULT: "#ef4444",
