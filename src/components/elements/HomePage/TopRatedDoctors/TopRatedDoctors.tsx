@@ -13,21 +13,19 @@ const TopRatedDoctors = async () => {
   const { data: doctors } = await res.json();
   return (
     <>
-      <div className=" my-3 py-7">
+      <div className="my-3">
         <div
-          className="py-36"
+          className="lg:py-44 lg:[clip-path:polygon(0_0,100%_25%,100%_100%,0_75%)]"
           style={{
             backgroundColor: "rgba(20, 20, 20, 0.1)",
-            clipPath: "polygon(0 0, 100% 25%, 100% 100%, 0 75%)",
           }}
         >
-          <div className="container mx-auto px-4 pt-32 pb-16 relative z-10">
-          <Suspense fallback={<div>Loading doctors...</div>}>
-            <TopRatedDoctorCard doctors={doctors} />
-          </Suspense>
+          <div className="container mx-auto px-4 py-10 relative z-10">
+            <Suspense fallback={<div>Loading doctors...</div>}>
+              <TopRatedDoctorCard doctors={doctors} />
+            </Suspense>
+          </div>
         </div>
-        </div>
-
       </div>
     </>
   );
