@@ -49,7 +49,8 @@ const SpecialistCard = ({ specialties }: SpecialistCardProps) => {
       <motion.div
         className="mb-12 text-left"
         initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
         transition={{ duration: 0.6 }}
       >
         <h1 className="text-4xl font-semibold text-blue-900 mb-2">
@@ -58,7 +59,8 @@ const SpecialistCard = ({ specialties }: SpecialistCardProps) => {
         <motion.p
           className="text-lg text-gray-600"
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true, amount: 0.2 }}
           transition={{ delay: 0.4, duration: 0.6 }}
         >
           Experienced Doctors Across All Specialties
@@ -69,7 +71,8 @@ const SpecialistCard = ({ specialties }: SpecialistCardProps) => {
         className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-10"
         variants={containerVariants}
         initial="hidden"
-        animate="visible"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
         ref={constraintsRef}
       >
         {specialties?.slice(0, 6)?.map((specialty) => (
@@ -112,7 +115,8 @@ const SpecialistCard = ({ specialties }: SpecialistCardProps) => {
       <motion.div
         className="text-center"
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true, amount: 0.2 }}
         transition={{ delay: 0.8 }}
       >
         <motion.div
