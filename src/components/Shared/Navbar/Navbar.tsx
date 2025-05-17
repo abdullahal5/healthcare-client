@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { Menu, Search, Calendar, X } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { Menu, Search, Calendar, X, User } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { routes } from "@/constant/Navbar.constant";
+import { MobileUserDropdown, UserDropDown } from "./UserDropDown";
 
 const Navbar = () => {
   const pathname = usePathname();
@@ -28,7 +29,8 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const router = useRouter();
+  const MotionLink = motion(Link);
+  const MotionButton = motion(Button);
 
   return (
     <motion.nav
@@ -41,35 +43,34 @@ const Navbar = () => {
     >
       <div className="container mx-auto px-4 py-3">
         <div className="flex justify-between items-center">
-          {/* Logo with smooth hover */}
-          <motion.div whileHover={{ scale: 1.02 }}>
-            <Link href="/" className="flex items-center">
-              <h1 className="text-2xl font-bold">
-                <span className="text-[#1586FD]">H</span>ealth
-                <span className="text-[#1586FD]">C</span>are
-              </h1>
-            </Link>
-          </motion.div>
+          {/* Logo */}
+          <MotionLink
+            href="/"
+            className="flex items-center"
+            whileHover={{ scale: 1.02 }}
+          >
+            <h1 className="text-2xl font-bold">
+              <span className="text-[#1586FD]">H</span>ealth
+              <span className="text-[#1586FD]">C</span>are
+            </h1>
+          </MotionLink>
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-1">
             {routes.map((route) => (
-              <motion.div
+              <MotionLink
                 key={route.path}
+                href={route.path}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                className={`px-3 py-2 rounded-md transition-all duration-200 hover:bg-slate-100 hover:text-[#1586FD] ${
+                  pathname === route.path
+                    ? "text-[#1586FD] font-medium"
+                    : "text-gray-700"
+                }`}
               >
-                <Link
-                  href={route.path}
-                  className={`px-3 py-2 rounded-md transition-all duration-200 hover:bg-slate-100 hover:text-[#1586FD] ${
-                    pathname === route.path
-                      ? "text-[#1586FD] font-medium"
-                      : "text-gray-700"
-                  }`}
-                >
-                  {route.name}
-                </Link>
-              </motion.div>
+                {route.name}
+              </MotionLink>
             ))}
           </div>
 
@@ -100,69 +101,53 @@ const Navbar = () => {
             </AnimatePresence>
 
             {!isSearchOpen && (
-              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsSearchOpen(true)}
-                  aria-label="Search"
-                  className="border-[#0f172a]/50"
-                >
-                  <Search className="h-5 w-5" />
-                </Button>
-              </motion.div>
+              <MotionButton
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsSearchOpen(true)}
+                aria-label="Search"
+                className="border-[#0f172a]/50"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <Search className="h-5 w-5" />
+              </MotionButton>
             )}
 
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                onClick={() => router.push("/register")}
-                variant="outline"
-                className="font-medium"
-              >
-                Sign Up
-              </Button>
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                onClick={() => router.push("/login")}
-                className="bg-[#1586FD] hover:bg-[#0e6cd0] transition-colors duration-200"
-              >
-                Login
-              </Button>
-            </motion.div>
+            <UserDropDown />
           </div>
 
           {/* Mobile Menu */}
           <div className="lg:hidden flex items-center">
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsSearchOpen(!isSearchOpen)}
-                aria-label="Search"
-                className="mr-2"
-              >
-                {isSearchOpen ? (
-                  <X className="h-5 w-5" />
-                ) : (
-                  <Search className="h-5 w-5" />
-                )}
-              </Button>
-            </motion.div>
+            <MotionButton
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsSearchOpen(!isSearchOpen)}
+              aria-label="Search"
+              className="mr-2"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              {isSearchOpen ? (
+                <X className="h-5 w-5" />
+              ) : (
+                <Search className="h-5 w-5" />
+              )}
+            </MotionButton>
 
             <Sheet>
               <SheetTrigger asChild>
-                <motion.div
+                <MotionButton
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Menu"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
-                  <Button variant="ghost" size="icon" aria-label="Menu">
-                    <Menu className="h-6 w-6" />
-                  </Button>
-                </motion.div>
+                  <Menu className="h-6 w-6" />
+                </MotionButton>
               </SheetTrigger>
               <SheetContent side="right" className="w-[300px] sm:w-[350px]">
-                {/* Added SheetTitle for accessibility */}
                 <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
 
                 <motion.div
@@ -199,22 +184,7 @@ const Navbar = () => {
                     </div>
                   </div>
                   <div className="mt-auto space-y-3">
-                    <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <Button className="w-full bg-[#1586FD] hover:bg-[#0e6cd0] transition-colors duration-200">
-                        Login
-                      </Button>
-                    </motion.div>
-                    <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <Button variant="outline" className="w-full">
-                        Sign Up
-                      </Button>
-                    </motion.div>
+                    <MobileUserDropdown />
                   </div>
                 </motion.div>
               </SheetContent>
@@ -256,14 +226,13 @@ const Navbar = () => {
         <div className="container mx-auto flex justify-center items-center">
           <Calendar className="h-4 w-4 mr-2" />
           <span>Need an appointment? Call us at (123) 456-7890 or</span>
-          <motion.div whileHover={{ scale: 1.05 }}>
-            <Button
-              variant="link"
-              className="text-white p-0 h-auto ml-1 underline hover:no-underline"
-            >
-              book online
-            </Button>
-          </motion.div>
+          <MotionButton
+            variant="link"
+            className="text-white p-0 h-auto ml-1 underline hover:no-underline"
+            whileHover={{ scale: 1.05 }}
+          >
+            book online
+          </MotionButton>
         </div>
       </motion.div>
     </motion.nav>

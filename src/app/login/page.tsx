@@ -23,11 +23,16 @@ import {
 } from "@/Transition/login.transition";
 import { formSchema } from "@/schema/login.schema";
 import { z } from "zod";
+import { userLogin } from "@/services/action/login";
+import { toast } from "sonner";
+import { storeUserInfo } from "@/services/auth.services";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -38,27 +43,20 @@ export default function LoginPage() {
   });
 
   const onSubmit = async (data: FieldValues) => {
-    console.log(data);
-    // const res = (await loginUser(data)) as unknown as TResponse<any>;
-    // if (res.error) {
-    //   toast.error(res.error.data.message, {
-    //     duration: 2000,
-    //   });
-    // } else {
-    //   toast.success(res.data.message, {
-    //     duration: 2000,
-    //   });
-    //   const token = res.data?.data?.accessToken;
-    //   const decoded = await verifyToken(token);
-    //   await getToken(token);
-    //   dispatch(
-    //     setUser({
-    //       token: res.data?.data?.accessToken,
-    //       user: decoded,
-    //     })
-    //   );
-    //   router.push("/");
-    // }
+    try {
+      const res = await userLogin(data);
+      if (!res.success) {
+        toast.error(res.message);
+      } else {
+        toast.success(res.message);
+        router.push("/");
+      }
+      if (res.data) {
+        const { accessToken } = res.data;
+
+        storeUserInfo(accessToken);
+      }
+    } catch (error) {}
   };
 
   return (
