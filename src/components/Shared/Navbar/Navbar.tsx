@@ -2,18 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import {
-  Menu,
-  Search,
-  Heart,
-  Calendar,
-  Users,
-  Phone,
-  Info,
-  Home,
-  X,
-} from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { Menu, Search, Calendar, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
@@ -37,6 +27,8 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const router = useRouter();
 
   return (
     <motion.nav
@@ -122,12 +114,19 @@ const Navbar = () => {
             )}
 
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button variant="outline" className="font-medium">
+              <Button
+                onClick={() => router.push("/register")}
+                variant="outline"
+                className="font-medium"
+              >
                 Sign Up
               </Button>
             </motion.div>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button className="bg-[#1586FD] hover:bg-[#0e6cd0] transition-colors duration-200">
+              <Button
+                onClick={() => router.push("/login")}
+                className="bg-[#1586FD] hover:bg-[#0e6cd0] transition-colors duration-200"
+              >
                 Login
               </Button>
             </motion.div>

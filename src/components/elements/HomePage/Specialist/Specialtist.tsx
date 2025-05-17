@@ -26,7 +26,7 @@ const SpecialistSkeleton = () => (
 
 const Specialist = async () => {
   const res = await fetch(
-    "https://healthcare-server-pi.vercel.app/api/v1/specialties",
+    `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/specialties`,
     {
       next: {
         revalidate: 30,

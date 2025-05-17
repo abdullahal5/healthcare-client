@@ -3,7 +3,7 @@ import TopRatedDoctorCard from "./TopRatedDoctorCard";
 
 const TopRatedDoctors = async () => {
   const res = await fetch(
-    "https://healthcare-server-pi.vercel.app/api/v1/doctor?limit=3",
+    `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/doctor?limit=3`,
     {
       next: {
         revalidate: 30,

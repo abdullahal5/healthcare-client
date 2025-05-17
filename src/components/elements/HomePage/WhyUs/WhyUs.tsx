@@ -2,70 +2,13 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import assets from "@/assets";
 import chooseUsImg from "@/assets/choose-us.png";
-import awardImg from "@/assets/images/award-service.jpg.jpg";
-import pregnancyImg from "@/assets/images/pregnancy.jpg";
-import equipmentImg from "@/assets/images/equipment.jpg";
-import emergencyImg from "@/assets/images/emergency.jpg";
 import { useState } from "react";
-
-const servicesData = [
-  {
-    imageSrc: assets.svgs.award,
-    title: "Award Winning Service",
-    description: "Exceptional service recognized by industry awards",
-    hoverImage: awardImg,
-  },
-  {
-    imageSrc: assets.svgs.care,
-    title: "Best Quality Pregnancy Care",
-    description: "Comprehensive care for expecting mothers",
-    hoverImage: pregnancyImg,
-  },
-  {
-    imageSrc: assets.svgs.equipment,
-    title: "Complete Medical Equipment",
-    description: "State-of-the-art medical technology",
-    hoverImage: equipmentImg,
-  },
-  {
-    imageSrc: assets.svgs.call,
-    title: "Dedicated Emergency Care",
-    description: "24/7 emergency services",
-    hoverImage: emergencyImg,
-  },
-];
+import { servicesData } from "./cardData";
+import { containerVariants, imageVariants, itemVariants } from "@/Transition/whyUs.transition";
 
 const WhyUs = () => {
   const [activeImage, setActiveImage] = useState(chooseUsImg);
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.5,
-      },
-    },
-  };
-
-  const imageVariants = {
-    enter: { opacity: 0 },
-    center: { opacity: 1 },
-    exit: { opacity: 0 },
-  };
 
   return (
     <div className="container mx-auto px-4 py-16">

@@ -5,60 +5,10 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { MapPin, Clock } from "lucide-react";
 import Link from "next/link";
-
-interface Doctor {
-  id: string;
-  name: string;
-  profilePhoto?: string;
-  qualification: string;
-  designation: string;
-  currentWorkingPlace: string;
-  experience: number;
-  averageRating: number;
-  appointmentFee: number;
-}
+import { buttonVariants, cardVariants, containerVariants, titleVariants } from "@/Transition/topRatedDoctor.transition";
+import { Doctor } from "@/types";
 
 const TopRatedDoctorCard = ({ doctors }: { doctors: Doctor[] }) => {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-      },
-    },
-  };
-
-  const cardVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        ease: "easeOut",
-      },
-    },
-  };
-
-  const titleVariants = {
-    hidden: { opacity: 0, y: -20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.7,
-        ease: "easeOut",
-      },
-    },
-  };
-
-  const buttonVariants = {
-    initial: { scale: 1 },
-    hover: { scale: 1.05, transition: { duration: 0.2 } },
-    tap: { scale: 0.95 },
-  };
-
   return (
     <div className="w-full">
       <motion.div
@@ -89,7 +39,6 @@ const TopRatedDoctorCard = ({ doctors }: { doctors: Doctor[] }) => {
             variants={cardVariants}
             className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col h-full"
           >
-            {/* Full-width image section */}
             <div className="relative h-56 w-full flex-shrink-0">
               <Image
                 src={doctor.profilePhoto || "/placeholder-doctor-bg.png"}
@@ -99,7 +48,6 @@ const TopRatedDoctorCard = ({ doctors }: { doctors: Doctor[] }) => {
               />
             </div>
 
-            {/* Content area that grows and pushes buttons to bottom */}
             <div className="p-5 flex flex-col flex-grow">
               <div className="mb-5">
                 <h3 className="text-xl font-bold text-slate-800">
