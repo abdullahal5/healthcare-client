@@ -34,11 +34,13 @@ import { formSchema } from "@/schema/register.schema";
 import { handleImageUpload, modifyPayload } from "@/utils/modifyPayload";
 import { registerPatient } from "@/services/action/registerPatient";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const Register = () => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -57,6 +59,9 @@ const Register = () => {
       const res = await registerPatient(data);
       if (!res.success) {
         toast.error(res.message);
+      } else {
+        toast.success(res.message);
+        router.push("/login");
       }
     } catch (error: any) {
       console.log(error.message);

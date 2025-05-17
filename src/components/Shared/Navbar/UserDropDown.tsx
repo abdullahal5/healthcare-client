@@ -25,7 +25,8 @@ export const UserDropDown = () => {
 
   const handleLogout = () => {
     removeUser()
-    router.push("/login");
+    setUserInfo(null);
+    router.refresh()
   };
 
   if (!mounted) {
@@ -39,7 +40,7 @@ export const UserDropDown = () => {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-10 w-10 rounded-full">
               <Avatar className="h-8 w-8">
-                <AvatarImage src={userInfo?.photoUrl} />
+                {/* <AvatarImage src={userInfo && userInfo.photoUrl } /> */}
                 <AvatarFallback className="flex items-center justify-center bg-gray-100">
                   <User className="h-4 w-4 text-gray-600" />
                 </AvatarFallback>
@@ -103,7 +104,8 @@ export const MobileUserDropdown = () => {
 
   const handleLogout = () => {
     removeUser();
-    router.push("/login");
+    setUserInfo(null);
+    router.refresh();
   };
 
   if (!mounted) {
