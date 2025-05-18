@@ -14,7 +14,10 @@ import { useEffect, useState } from "react";
 
 export const UserDropDown = () => {
   const router = useRouter();
-  const [userInfo, setUserInfo] = useState(null);
+  const [userInfo, setUserInfo] = useState<{
+    email: string;
+    role: string;
+  } | null>(null);
   const [mounted, setMounted] = useState(false);
   const MotionButton = motion(Button);
 
@@ -24,9 +27,9 @@ export const UserDropDown = () => {
   }, []);
 
   const handleLogout = () => {
-    removeUser()
+    removeUser();
     setUserInfo(null);
-    router.refresh()
+    router.refresh();
   };
 
   if (!mounted) {
@@ -53,7 +56,7 @@ export const UserDropDown = () => {
             forceMount
           >
             <DropdownMenuItem
-              onClick={() => router.push("/dashboard")}
+              onClick={() => router.push(`/dashboard/${userInfo.role}`)}
               className="cursor-pointer px-4 py-2 text-sm hover:bg-gray-50"
             >
               Dashboard
@@ -93,7 +96,10 @@ export const UserDropDown = () => {
 
 export const MobileUserDropdown = () => {
   const router = useRouter();
-  const [userInfo, setUserInfo] = useState(null);
+  const [userInfo, setUserInfo] = useState<{
+    email: string;
+    role: string;
+  } | null>(null);
   const [mounted, setMounted] = useState(false);
   const MotionButton = motion(Button);
 
@@ -116,7 +122,10 @@ export const MobileUserDropdown = () => {
     <div className="mt-auto space-y-3">
       {userInfo ? (
         <>
-          <Button onClick={() => router.push("/dashboard")} className="w-full">
+          <Button
+            onClick={() => router.push(`/dashboard/${userInfo?.role}`)}
+            className="w-full"
+          >
             Dashboard
           </Button>
           <Button
