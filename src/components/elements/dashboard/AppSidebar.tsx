@@ -18,10 +18,8 @@ import SidebarItem from "./SidebarItem";
 import assets from "@/assets";
 
 export function AppSidebar() {
-  const { state, isMobile, openMobile, setOpenMobile } = useSidebar();
+  const { state } = useSidebar();
   const isOpen = state === "expanded";
-
-  console.log({ isMobile, openMobile });
 
   return (
     <Sidebar
@@ -29,8 +27,7 @@ export function AppSidebar() {
       className={cn(
         "border-r transition-all duration-300",
         isOpen ? "w-64" : "w-16",
-        "sm:w-64 sm:block",
-        isMobile ? "bg-white" : ""
+        "sm:w-64 sm:block"
       )}
     >
       {/* Sidebar Header */}

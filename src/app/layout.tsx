@@ -4,7 +4,7 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import Providers from "@/lib/Providers";
 
-const inter = Inter({ subsets: ["latin"] });
+// const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Health Care",
@@ -19,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <Providers>
-        <body className={`${inter.className} bg-bla`}>
+        <body>
           <Toaster richColors position="top-center" />
           {children}
         </body>

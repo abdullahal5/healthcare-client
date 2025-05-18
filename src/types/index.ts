@@ -1,3 +1,4 @@
+import { LucideIcon } from "lucide-react";
 import { ClassNameValue } from "tailwind-merge";
 
 export interface Doctor {
@@ -33,7 +34,7 @@ export type TInputProps = {
   size?: "sm" | "md" | "lg";
   placeholder?: string;
   className?: ClassNameValue;
-  icon?: any;
+  icon?: LucideIcon;
   required?: boolean;
   disabled?: boolean;
   readOnly?: boolean;
