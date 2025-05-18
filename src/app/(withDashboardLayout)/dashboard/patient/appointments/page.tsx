@@ -1,4 +1,4 @@
-const Appointment = () => {
+const Appointments = () => {
     return (
         <div>
             appoinments
@@ -6,4 +6,4 @@ const Appointment = () => {
     );
 };
 
-export default Appointment;
+export default Appointments;

@@ -19,7 +19,7 @@ export interface IRoleMenus {
   title: string;
   path: string;
   icon?: LucideIcon;
-  child?: IRoleMenus;
+  child?: IRoleMenus[];
 }
 
 export const menuItems = (role: UserRole): IRoleMenus[] => {

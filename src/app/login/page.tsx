@@ -49,7 +49,7 @@ export default function LoginPage() {
         toast.error(res.message);
       } else {
         toast.success(res.message);
-        router.push("/");
+        router.push("/dashboard");
       }
       if (res.data) {
         const { accessToken } = res.data;
