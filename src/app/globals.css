@@ -29,6 +29,7 @@
     --border: var(--tw-color-border);
     --input: var(--tw-color-input);
     --ring: var(--tw-color-ring);
+    --sidebar-background: 0 0% 100%;
   }
 
   .dark {
@@ -40,9 +41,14 @@
     --border: var(--tw-color-border-dark);
     --input: var(--tw-color-input-dark);
     --ring: var(--tw-color-ring-dark);
+    --sidebar-background: 215 27.9% 16.9%;
   }
 
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.bg-sidebar {
+  background-color: hsl(var(--sidebar-background));
 }
