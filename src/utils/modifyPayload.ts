@@ -15,10 +15,21 @@ export const handleImageUpload = (
 };
 
 export const modifyPayload = (values: FieldValues) => {
-  const { obj } = { ...values };
-  const data = JSON.stringify(obj);
-  const formData = new FormData()
-  formData.append("data", data)
+  const { file, ...rest } = values;
+
+  const formData = new FormData();
+  formData.append("data", JSON.stringify(rest));
+
+  if (file) {
+    if (Array.isArray(file)) {
+      file.forEach((f, index) => {
+        formData.append(`file${index}`, f);
+      });
+    } else {
+      formData.append("file", file);
+    }
+  }
 
   return formData;
 };
+

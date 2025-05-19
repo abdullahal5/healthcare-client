@@ -45,6 +45,7 @@ const HCInput = ({
               )}
               <Input
                 {...field}
+                value={field.value || ""}
                 type={inputType}
                 id={name}
                 placeholder={placeholder}
@@ -78,9 +79,7 @@ const HCInput = ({
               )}
             </div>
             {error && (
-              <span className="text-red-500 text-sm">
-                {error.message}
-              </span>
+              <span className="text-red-500 text-sm">{error.message}</span>
             )}
           </div>
         );

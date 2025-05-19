@@ -50,7 +50,7 @@ const Specialties = () => {
       </div>
 
       {/* modal */}
-      <SpecialistModal open={isModalOpen} setOpen={setIsModalOpen} >Hello</SpecialistModal>
+      <SpecialistModal open={isModalOpen} setOpen={setIsModalOpen}></SpecialistModal>
     </>
   );
 };
