@@ -57,7 +57,7 @@ const SpecialistModal = ({
             className="space-y-4 max-h-[70vh] overflow-y-auto overflow-x-hidden p-3"
           >
             <HCForm
-              resolver={zodResolver(specialistSchema)}
+              // resolver={zodResolver(specialistSchema)}
               onSubmit={handleFormSubmit}
             >
               <motion.div
