@@ -39,3 +39,9 @@ export type TInputProps = {
   disabled?: boolean;
   readOnly?: boolean;
 };
+
+export type TSpecialties = {
+  id: string;
+  title: string;
+  icon: string;
+};

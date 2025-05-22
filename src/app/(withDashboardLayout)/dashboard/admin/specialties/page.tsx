@@ -20,12 +20,9 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import Image from "next/image";
 import SpecialistDeleteConfirmationModal from "./components/SpecialistDeleteConfirmationModa";
-
-type TSpecialties = {
-  id: string;
-  title: string;
-  icon: string;
-};
+import PageHeader from "@/components/Shared/DashboardUtils/PageHeader";
+import EmptyState from "@/components/Shared/DashboardUtils/EmptyState";
+import { TSpecialties } from "@/types";
 
 const Specialties = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -114,9 +111,6 @@ const Specialties = () => {
             <DropdownMenuContent align="end" className="bg-white">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="hover:bg-gray-100">
-                Edit specialty
-              </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => handleDeleteClick(specialty.id)}
                 className="text-red-600 hover:bg-red-100 focus:bg-red-100"
@@ -132,51 +126,41 @@ const Specialties = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Specialties</h1>
-          <p className="text-muted-foreground">
-            Manage medical specialties for your healthcare system
-          </p>
-        </div>
-        <Button onClick={() => setIsModalOpen(true)} className="gap-2">
-          <Plus className="h-4 w-4" />
-          Add Specialty
-        </Button>
-      </div>
+      <PageHeader
+        title="Specialties"
+        subtitle="Manage medical specialties for your healthcare system"
+        buttonLabel="Add Specialty"
+        icon={<Plus className="h-4 w-4" />}
+        onButtonClick={() => setIsModalOpen(true)}
+      />
 
-      <div className="rounded-lg bg-white shadow-sm">
-        <DataTable
-          data={specialtyData ?? []}
-          columns={columns}
-          isFilterInputShow={false}
-          isLoading={isLoading}
-          isFetching={isFetching}
+      {isLoading ||
+      isFetching ||
+      (specialtyData && specialtyData.length > 0) ? (
+        <div className="rounded-lg bg-white shadow-sm">
+          <DataTable
+            data={specialtyData ?? []}
+            columns={columns}
+            isFilterInputShow={false}
+            isLoading={isLoading}
+            isFetching={isFetching}
+            showPagination={false}
+          />
+        </div>
+      ) : (
+        <EmptyState
+          icon={<Plus className="h-6 w-6 text-blue-600" />}
+          title="No specialties found"
+          description="Get started by creating your first medical specialty. Specialties help categorize and organize your healthcare providers and services."
+          buttonLabel="Create Specialty"
+          onButtonClick={() => setIsModalOpen(true)}
         />
-      </div>
-
-      {!specialtyData && (
-        <div className="flex flex-col items-center justify-center rounded-lg border bg-white p-12 text-center shadow-sm">
-          <div className="max-w-md space-y-4">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-50">
-              <Plus className="h-6 w-6 text-blue-600" />
-            </div>
-            <h2 className="text-xl font-semibold">No specialties found</h2>
-            <p className="text-muted-foreground">
-              Get started by creating your first medical specialty. Specialties
-              help categorize and organize your healthcare providers and
-              services.
-            </p>
-            <Button onClick={() => setIsModalOpen(true)} className="mt-4 gap-2">
-              <Plus className="h-4 w-4" />
-              Create Specialty
-            </Button>
-          </div>
-        </div>
       )}
 
+      {/* create specialty modal */}
       <SpecialistModal open={isModalOpen} setOpen={setIsModalOpen} />
 
+      {/* Delete confirmation modal */}
       <SpecialistDeleteConfirmationModal
         id={selectedSpecialtyId}
         open={deleteModalOpen}

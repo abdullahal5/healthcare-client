@@ -47,6 +47,11 @@ interface DataTableProps<TData> {
   isFilterInputShow?: boolean;
   isLoading?: boolean;
   isFetching?: boolean;
+  pageCount?: number;
+  currentPage?: number;
+  onPageChange?: (page: number) => void;
+  onSortingChange?: (sortBy: string, sortOrder: "asc" | "desc") => void;
+  initialSorting?: { sortBy: string; sortOrder: "asc" | "desc" };
 }
 
 export function DataTable<TData>({
@@ -63,8 +68,23 @@ export function DataTable<TData>({
   isFilterInputShow = true,
   isLoading = false,
   isFetching = false,
+  pageCount = 0,
+  currentPage = 1,
+  onPageChange,
+  onSortingChange,
+  initialSorting = { sortBy: "", sortOrder: "asc" },
 }: DataTableProps<TData>) {
-  const [sorting, setSorting] = React.useState<SortingState>(defaultSorting);
+  const [sorting, setSorting] = React.useState<SortingState>(() => {
+    if (initialSorting.sortBy) {
+      return [
+        {
+          id: initialSorting.sortBy,
+          desc: initialSorting.sortOrder === "desc",
+        },
+      ];
+    }
+    return defaultSorting;
+  });
   const [columnFilters, setColumnFilters] =
     React.useState<ColumnFiltersState>(defaultColumnFilters);
   const [columnVisibility, setColumnVisibility] =
@@ -75,7 +95,21 @@ export function DataTable<TData>({
   const table = useReactTable({
     data,
     columns,
-    onSortingChange: setSorting,
+    manualSorting: !!onSortingChange,
+    onSortingChange: (updater) => {
+      const newSorting =
+        typeof updater === "function" ? updater(sorting) : updater;
+      setSorting(newSorting);
+
+      if (onSortingChange) {
+        if (newSorting.length > 0) {
+          const { id, desc } = newSorting[0];
+          onSortingChange(id, desc ? "desc" : "asc");
+        } else {
+          onSortingChange("", "asc");
+        }
+      }
+    },
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
@@ -216,20 +250,23 @@ export function DataTable<TData>({
               {table?.getFilteredRowModel().rows.length} row(s) selected.
             </div>
           )}
-          <div className="space-x-2">
+          <div className="flex items-center space-x-2">
             <Button
               variant="outline"
               size="sm"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
+              onClick={() => onPageChange?.(currentPage - 1)}
+              disabled={currentPage <= 1}
             >
               Previous
             </Button>
+            <span className="text-sm">
+              Page {currentPage} of {pageCount}
+            </span>
             <Button
               variant="outline"
               size="sm"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
+              onClick={() => onPageChange?.(currentPage + 1)}
+              disabled={currentPage >= pageCount}
             >
               Next
             </Button>

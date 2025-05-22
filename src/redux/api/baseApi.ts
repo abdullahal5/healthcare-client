@@ -10,3 +10,6 @@ export const baseApi = createApi({
   endpoints: () => ({}),
   tagTypes: tagTypesList,
 });
+
+// https://healthcare-server-pi.vercel.app/api/v1
+// http://localhost:5000/api/v1
