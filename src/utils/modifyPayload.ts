@@ -1,5 +1,3 @@
-import { FieldValues } from "react-hook-form";
-
 export const handleImageUpload = (
   e: React.ChangeEvent<HTMLInputElement>,
   setProfileImage: any
@@ -14,9 +12,10 @@ export const handleImageUpload = (
   }
 };
 
+type FieldValues = Record<string, any>;
+
 export const modifyPayload = (values: FieldValues) => {
   const { file, ...rest } = values;
-
   const formData = new FormData();
   formData.append("data", JSON.stringify(rest));
 
@@ -32,4 +31,3 @@ export const modifyPayload = (values: FieldValues) => {
 
   return formData;
 };
-

@@ -12,7 +12,7 @@ export interface Doctor {
   averageRating: number;
   appointmentFee: number;
   createdAt: Date;
-  updatedAt: Date
+  updatedAt: Date;
 }
 
 export type InputType =
@@ -45,3 +45,8 @@ export type TSpecialties = {
   title: string;
   icon: string;
 };
+
+export const doctorGender = [
+  { value: "MALE", label: "MALE" },
+  { value: "FEMALE", label: "FEMALE" },
+];

@@ -4,7 +4,7 @@ import PageHeader from "@/components/Shared/DashboardUtils/PageHeader";
 import { DataTable } from "@/components/Shared/table/DataTable";
 import { useGetAllDoctorsQuery } from "@/redux/api/doctorApi";
 import { MoreHorizontal, Plus } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,9 +19,15 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import type { Doctor, IDoctor } from "@/types/doctor";
 import { renderSortableHeader } from "@/components/Shared/table/utils";
+import CreateDoctorModal from "./components/CreateDoctorModal";
+import EditDoctorModal from "./components/EditDoctorModal";
+import { useRouter, useSearchParams } from "next/navigation";
+import ViewDoctorModal from "./components/ViewDoctorModal";
 
 const Doctors = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
+  const [selectedDoctorId, setSelectedDoctorId] = useState<string | null>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [pagination, setPagination] = useState({
     page: 1,
@@ -31,6 +37,36 @@ const Doctors = () => {
     sortBy: string;
     sortOrder: "asc" | "desc";
   }>({ sortBy: "averageRating", sortOrder: "desc" });
+
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const doctorIdFromEditParams = searchParams.get("edit");
+  const doctorIdFromViewParams = searchParams.get("view");
+
+  const isEditModalOpen = !!doctorIdFromEditParams;
+  const isViewModalOpen = !!doctorIdFromViewParams;
+
+  const openEditModal = (id: string) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("edit", id);
+    params.delete("view");
+    router.push(`?${params.toString()}`);
+  };
+
+  const openViewModal = (id: string) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("view", id);
+    params.delete("edit");
+    router.push(`?${params.toString()}`);
+  };
+
+  const closeModal = () => {
+    const params = new URLSearchParams(searchParams);
+    params.delete("edit");
+    params.delete("view");
+    router.push(`?${params.toString()}`);
+  };
 
   const {
     data: doctorData,
@@ -144,12 +180,12 @@ const Doctors = () => {
             <DropdownMenuContent align="end" className="bg-white">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(doctor.id)}
-              >
-                Copy doctor ID
+              <DropdownMenuItem onClick={() => openViewModal(doctor.id)}>
+                View details
               </DropdownMenuItem>
-              <DropdownMenuItem>View details</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => openEditModal(doctor.id)}>
+                Edit
+              </DropdownMenuItem>
               <DropdownMenuItem className="text-red-600 hover:bg-red-100 focus:bg-red-100">
                 Delete doctor
               </DropdownMenuItem>
@@ -161,47 +197,70 @@ const Doctors = () => {
   ];
 
   return (
-    <div className="space-y-6">
-      <PageHeader
-        title="Doctors"
-        subtitle="Manage and organize the doctors within your healthcare system"
-        buttonLabel="Add Doctors"
-        icon={<Plus className="h-4 w-4" />}
-        onButtonClick={() => setIsModalOpen(true)}
-      />
-
-      {isLoading ||
-      isFetching ||
-      (doctorData && doctorData?.doctors?.length > 0) ||
-      searchTerm ? (
-        <div className="rounded-lg bg-white shadow-sm">
-          <DataTable
-            data={doctorData?.doctors ?? []}
-            columns={columns as ColumnDef<IDoctor>[]}
-            onSearchInputChange={(value) => setSearchTerm(value)}
-            isLoading={isLoading}
-            isFetching={isFetching}
-            initialSorting={{
-              sortBy: sorting.sortBy,
-              sortOrder: sorting.sortOrder,
-            }}
-            showPagination={true}
-            pageCount={totalPages}
-            onPageChange={handlePaginationChange}
-            currentPage={pagination.page}
-            onSortingChange={handleSortingChange}
-          />
-        </div>
-      ) : (
-        <EmptyState
-          icon={<Plus className="h-6 w-6 text-blue-600" />}
-          title="No doctor found"
-          description="Get started by creating your first medical specialty. Specialties help categorize and organize your healthcare providers and services."
-          buttonLabel="Create Doctor"
+    <>
+      <div className="space-y-6">
+        <PageHeader
+          title="Doctors"
+          subtitle="Manage and organize the doctors within your healthcare system"
+          buttonLabel="Add Doctors"
+          icon={<Plus className="h-4 w-4" />}
           onButtonClick={() => setIsModalOpen(true)}
         />
+
+        {isLoading ||
+        isFetching ||
+        (doctorData && doctorData?.doctors?.length > 0) ||
+        searchTerm ? (
+          <div className="rounded-lg bg-white shadow-sm">
+            <DataTable
+              data={doctorData?.doctors ?? []}
+              columns={columns as ColumnDef<IDoctor>[]}
+              onSearchInputChange={(value) => setSearchTerm(value)}
+              isLoading={isLoading}
+              isFetching={isFetching}
+              initialSorting={{
+                sortBy: sorting.sortBy,
+                sortOrder: sorting.sortOrder,
+              }}
+              showPagination={true}
+              pageCount={totalPages}
+              onPageChange={handlePaginationChange}
+              currentPage={pagination.page}
+              onSortingChange={handleSortingChange}
+            />
+          </div>
+        ) : (
+          <EmptyState
+            icon={<Plus className="h-6 w-6 text-blue-600" />}
+            title="No doctor found"
+            description="Get started by creating your first medical specialty. Specialties help categorize and organize your healthcare providers and services."
+            buttonLabel="Create Doctor"
+            onButtonClick={() => setIsModalOpen(true)}
+          />
+        )}
+      </div>
+
+      {/* create modal */}
+      <CreateDoctorModal open={isModalOpen} setOpen={setIsModalOpen} />
+
+      {/* update doctor modal */}
+      {isEditModalOpen && (
+        <EditDoctorModal
+          open={true}
+          setOpen={closeModal}
+          doctorId={doctorIdFromEditParams}
+        />
       )}
-    </div>
+
+      {/* view doctor modal */}
+      {isViewModalOpen && (
+        <ViewDoctorModal
+          open={true}
+          setOpen={closeModal}
+          doctorId={doctorIdFromViewParams}
+        />
+      )}
+    </>
   );
 };
 
