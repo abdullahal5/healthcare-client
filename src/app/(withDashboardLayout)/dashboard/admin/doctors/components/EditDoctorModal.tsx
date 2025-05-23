@@ -70,7 +70,7 @@ const EditDoctorModal = ({
         toast.success("Doctor updated successfully!");
         setOpen(false);
       }
-      //   fileUploaderRef.current?.reset();
+      fileUploaderRef.current?.reset();
     } catch (error: any) {
       const errorMessage = error?.data?.message || "Something went wrong!";
       toast.error(errorMessage);

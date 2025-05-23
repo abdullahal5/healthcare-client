@@ -2,7 +2,7 @@
 import EmptyState from "@/components/Shared/DashboardUtils/EmptyState";
 import PageHeader from "@/components/Shared/DashboardUtils/PageHeader";
 import { DataTable } from "@/components/Shared/table/DataTable";
-import { useGetAllDoctorsQuery } from "@/redux/api/doctorApi";
+import { useGetAllDoctorsQuery, useHardDeleteDoctorMutation, useSoftDeleteDoctorMutation } from "@/redux/api/doctorApi";
 import { MoreHorizontal, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
@@ -23,11 +23,12 @@ import CreateDoctorModal from "./components/CreateDoctorModal";
 import EditDoctorModal from "./components/EditDoctorModal";
 import { useRouter, useSearchParams } from "next/navigation";
 import ViewDoctorModal from "./components/ViewDoctorModal";
+import DeleteDoctorModal from "./components/DeleteDoctorModal";
 
 const Doctors = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
-  const [selectedDoctorId, setSelectedDoctorId] = useState<string | null>("");
+  const [selectedDoctorId, setSelectedDoctorId] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [pagination, setPagination] = useState({
     page: 1,
@@ -66,6 +67,14 @@ const Doctors = () => {
     params.delete("edit");
     params.delete("view");
     router.push(`?${params.toString()}`);
+  };
+
+  const [softDeleteDoctor] = useSoftDeleteDoctorMutation();
+  const [hardDeleteDoctor] = useHardDeleteDoctorMutation();
+
+  const handleDeleteClick = (id: string) => {
+    setSelectedDoctorId(id);
+    setDeleteModalOpen(true);
   };
 
   const {
@@ -186,7 +195,10 @@ const Doctors = () => {
               <DropdownMenuItem onClick={() => openEditModal(doctor.id)}>
                 Edit
               </DropdownMenuItem>
-              <DropdownMenuItem className="text-red-600 hover:bg-red-100 focus:bg-red-100">
+              <DropdownMenuItem
+                onClick={() => handleDeleteClick(doctor.id)}
+                className="text-red-600 hover:bg-red-100 focus:bg-red-100"
+              >
                 Delete doctor
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -260,6 +272,16 @@ const Doctors = () => {
           doctorId={doctorIdFromViewParams}
         />
       )}
+
+      {/* delete modal */}
+      <DeleteDoctorModal
+        id={selectedDoctorId}
+        open={deleteModalOpen}
+        softDeleteMutation={softDeleteDoctor}
+        setOpen={setDeleteModalOpen}
+        hardDeleteMutation={hardDeleteDoctor}
+        entityName="Doctor"
+      />
     </>
   );
 };
