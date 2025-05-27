@@ -12,7 +12,7 @@ interface SpecialistDeleteConfirmationModalProps<T> {
   entityName?: string; 
 }
 
-const SpecialistDeleteConfirmationModal = <T,>({
+const DeleteSchedulesModal = <T,>({
   id,
   open,
   setOpen,
@@ -26,7 +26,7 @@ const SpecialistDeleteConfirmationModal = <T,>({
       setIsDeleting(true);
       const res = await mutation(id).unwrap();
       if (res.id) {
-        toast.success("Specialist deleted successfully!");
+        toast.success("Schedules deleted successfully!");
         setOpen(false);
       }
       setOpen(false);
@@ -70,4 +70,4 @@ const SpecialistDeleteConfirmationModal = <T,>({
   );
 };
 
-export default SpecialistDeleteConfirmationModal;
+export default DeleteSchedulesModal;

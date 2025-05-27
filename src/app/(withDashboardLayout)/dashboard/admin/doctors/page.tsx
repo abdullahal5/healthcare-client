@@ -4,7 +4,7 @@ import PageHeader from "@/components/Shared/DashboardUtils/PageHeader";
 import { DataTable } from "@/components/Shared/table/DataTable";
 import { useGetAllDoctorsQuery, useHardDeleteDoctorMutation, useSoftDeleteDoctorMutation } from "@/redux/api/doctorApi";
 import { MoreHorizontal, Plus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
