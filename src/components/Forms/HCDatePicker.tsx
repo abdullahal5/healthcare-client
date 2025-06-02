@@ -23,6 +23,8 @@ type TDatePickerProps = {
   className?: string;
   required?: boolean;
   size?: "sm" | "md" | "lg";
+  onChange?: (date: Date | null) => void;
+  highLightDates?: Date[];
 };
 
 export function DatePicker({
@@ -33,6 +35,8 @@ export function DatePicker({
   className,
   required = false,
   size = "md",
+  onChange,
+  highLightDates,
 }: TDatePickerProps) {
   const { control } = useFormContext();
 
@@ -68,13 +72,17 @@ export function DatePicker({
                 className={cn(
                   "w-full justify-start text-left font-normal",
                   !field.value && "text-muted-foreground",
-                  getButtonSizeClass(),
+                  getButtonSizeClass()
                 )}
                 disabled={disabled}
                 id={name}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {field.value ? format(field.value, "PPP") : placeholder}
+                {field.value &&
+                field.value instanceof Date &&
+                !isNaN(field.value.getTime())
+                  ? format(field.value, "PPP")
+                  : placeholder}{" "}
               </Button>
             </PopoverTrigger>
             <PopoverContent
@@ -85,7 +93,18 @@ export function DatePicker({
               <Calendar
                 mode="single"
                 selected={field.value}
-                onSelect={(date) => field.onChange(date)}
+                onSelect={(date) => {
+                  const selectedDate = date ?? null;
+                  field.onChange(selectedDate);
+                  onChange?.(selectedDate);
+                }}
+                modifiers={{
+                  highlighted: highLightDates ?? [],
+                }}
+                modifiersClassNames={{
+                  highlighted: "bg-blue-100 text-blue-800 font-semibold",
+                  selected: "bg-blue-500 text-white font-semibold",
+                }}
                 initialFocus
               />
             </PopoverContent>

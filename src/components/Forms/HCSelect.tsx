@@ -11,7 +11,6 @@ import {
   SelectValue,
 } from "../ui/select";
 import { FormLabel } from "../ui/form";
-import { ChevronDown } from "lucide-react";
 
 type TOption = {
   value: string;
@@ -77,7 +76,6 @@ const HCSelect = ({
               }`}
             >
               <SelectValue placeholder={placeholder} />
-              <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </SelectTrigger>
             <SelectContent className="bg-white">
               {group ? (

@@ -30,8 +30,6 @@ import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
   const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -43,20 +41,24 @@ export default function LoginPage() {
   });
 
   const onSubmit = async (data: FieldValues) => {
+    setIsLoading(true);
     try {
       const res = await userLogin(data);
       if (!res.success) {
         toast.error(res.message);
       } else {
         toast.success(res.message);
+        if (res.data) {
+          const { accessToken } = res.data;
+          storeUserInfo(accessToken);
+        }
         router.push("/dashboard");
       }
-      if (res.data) {
-        const { accessToken } = res.data;
-
-        storeUserInfo(accessToken);
-      }
-    } catch (error) {}
+    } catch (error) {
+      toast.error("An error occurred during login");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -114,21 +116,16 @@ export default function LoginPage() {
                     <Button
                       type="submit"
                       className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-6 transition-all mt-6 duration-200 shadow-md hover:shadow-lg"
-                      disabled={isSubmitting}
+                      disabled={isLoading}
                     >
-                      {isSubmitting ? (
+                      {isLoading ? (
                         <div className="flex items-center justify-center">
                           <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                          Processing...
-                        </div>
-                      ) : isSuccess ? (
-                        <div className="flex items-center justify-center">
-                          <CheckCircle2 className="w-5 h-5 mr-2" />
-                          Registration Successful
+                          Logging in...
                         </div>
                       ) : (
                         <>
-                          Login <ArrowRight />
+                          Login <ArrowRight className="ml-2" />
                         </>
                       )}
                     </Button>
