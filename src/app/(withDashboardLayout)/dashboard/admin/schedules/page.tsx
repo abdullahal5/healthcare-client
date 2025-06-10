@@ -30,7 +30,7 @@ const Schedules = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedId, setSelectedId] = useState("");
   const [pagination, setPagination] = useState({
-    page: 1,
+    page: 2,
     limit: 10,
   });
   const [sorting, setSorting] = useState<{
@@ -47,8 +47,6 @@ const Schedules = () => {
   } = useGetAllSchedulesQuery({
     page: pagination.page,
     limit: pagination.limit,
-    sortBy: sorting.sortBy,
-    sortOrder: sorting.sortOrder,
   });
 
   const totalPages = scheduleData?.meta?.total

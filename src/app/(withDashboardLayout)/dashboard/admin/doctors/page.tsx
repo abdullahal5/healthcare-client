@@ -93,7 +93,7 @@ const Doctors = () => {
     ? Math.ceil(doctorData.meta.total / pagination.limit)
     : 0;
 
-  const handlePaginationChange = (page: number) => {
+   const handlePaginationChange = (page: number) => {
     setPagination((prev) => ({ ...prev, page }));
   };
 

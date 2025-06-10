@@ -71,7 +71,7 @@ const DashboardNavbar = () => {
   }
 
   return (
-    <div className="w-full sticky top-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
+    <div className="w-full z-[9999999] sticky top-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
       <header className="h-16 flex items-center justify-between px-6 max-w-full">
         <div className="flex items-center gap-4">
           <SidebarTrigger className="rounded-md p-2 hover:bg-accent transition-colors" />
@@ -175,7 +175,7 @@ const DashboardNavbar = () => {
                         )}
                       </Avatar>
                       <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-semibold leading-none">
+                        <p className="text-xs font-semibold leading-none">
                           {data?.name || "User"}
                         </p>
                         <p className="text-xs leading-none text-muted-foreground">

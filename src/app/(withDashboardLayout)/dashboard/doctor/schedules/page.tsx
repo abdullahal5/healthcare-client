@@ -27,6 +27,11 @@ const Schedules = () => {
   const [isCreateScheduleModalOpen, setIsCreateScheduleModalOpen] =
     useState<boolean>(false);
 
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 10,
+  });
+
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -41,7 +46,10 @@ const Schedules = () => {
     data: schedulesData,
     isLoading,
     isFetching,
-  } = useGetMyScheduleQuery({});
+  } = useGetMyScheduleQuery({
+    page: pagination.page,
+    limit: pagination.limit,
+  });
 
   const columns: ColumnDef<DoctorSchedules>[] = [
     {
@@ -139,6 +147,16 @@ const Schedules = () => {
     },
   ];
 
+  const handlePaginationChange = (page: number) => {
+    setPagination((prev) => ({ ...prev, page }));
+  };
+
+  const totalPages = schedulesData?.meta?.total
+    ? Math.ceil(schedulesData.meta.total / pagination.limit)
+    : 0;
+
+    console.log(totalPages);
+
   return (
     <>
       <div className="space-y-6">
@@ -160,6 +178,10 @@ const Schedules = () => {
               isLoading={isLoading}
               isFetching={isFetching}
               isFilterInputShow={false}
+              showPagination={true}
+              pageCount={totalPages}
+              onPageChange={handlePaginationChange}
+              currentPage={pagination.page}
             />
           </div>
         ) : (
