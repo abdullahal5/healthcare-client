@@ -50,9 +50,10 @@ export default function LoginPage() {
         toast.success(res.message);
         if (res.data) {
           const { accessToken } = res.data;
+          console.log({ accessToken });
           storeUserInfo(accessToken);
         }
-        router.push("/dashboard");
+        // router.push("/dashboard");
       }
     } catch (error) {
       toast.error("An error occurred during login");

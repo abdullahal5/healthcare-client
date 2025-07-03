@@ -33,7 +33,7 @@ const HCForm = ({
 
   const submit: SubmitHandler<FieldValues> = (data) => {
     onSubmit(data);
-    reset();
+    // reset();
   };
 
   return (

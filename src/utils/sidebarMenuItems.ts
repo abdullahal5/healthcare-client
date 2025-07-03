@@ -28,12 +28,12 @@ export const menuItems = (role: UserRole): IRoleMenus[] => {
   const defaultMenus: IRoleMenus[] = [
     {
       title: "Profile",
-      path: `${role}/profile`,
+      path: `profile`,
       icon: User,
     },
     {
       title: "Change Password",
-      path: `${role}/change-password`,
+      path: `change-password`,
       icon: KeyIcon,
     },
   ];

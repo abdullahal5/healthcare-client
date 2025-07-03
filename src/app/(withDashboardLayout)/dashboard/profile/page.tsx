@@ -20,7 +20,6 @@ import {
   Star,
   Shield,
   Edit,
-  Settings,
   Stethoscope,
   GraduationCap,
   Clock,
@@ -161,19 +160,12 @@ const Profile = () => {
                         variant="outline"
                         size="sm"
                         onClick={() =>
-                          router.push("/dashboard/doctor/profile/edit")
+                          router.push("/dashboard/profile/edit")
                         }
                         className="border-blue-300 text-blue-600 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-400 dark:hover:bg-blue-900/30"
                       >
                         <Edit className="w-4 h-4 mr-2" />
                         Edit
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="border-gray-300 text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800"
-                      >
-                        <Settings className="w-4 h-4" />
                       </Button>
                     </div>
                   </div>

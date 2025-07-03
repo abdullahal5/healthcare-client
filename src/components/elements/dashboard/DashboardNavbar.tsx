@@ -23,14 +23,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
+import { deleteCookies } from "@/services/action/deleteCookies";
+import { authKey } from "@/constant/authKey";
+import { logoutUser } from "@/services/action/logoutUser";
 
 const DashboardNavbar = () => {
   const { isLoading, data } = useGetSingleUserQuery({});
   const router = useRouter();
 
   const handleLogout = () => {
-    localStorage.removeItem("accessToken");
-    router.push("/login");
+    logoutUser(router)
   };
 
   const formatDate = (dateString: string) => {

@@ -1,4 +1,5 @@
 import { authKey } from "@/constant/authKey";
+import setAccessToken from "@/services/action/setAccessToken";
 import { getNewAccessToken } from "@/services/auth.services";
 import { getFromLocalStorage, setToLocalStorage } from "@/utils/local-storage";
 import axios from "axios";
@@ -35,6 +36,7 @@ instance.interceptors.response.use(
       config.sent = true;
       config.headers.Authorization = accessToken;
       setToLocalStorage(authKey, accessToken);
+      setAccessToken(accessToken);
 
       return instance(config);
     }
