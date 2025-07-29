@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import TopRatedDoctorCard from "./TopRatedDoctorCard";
+import DoctorCard from "./TopRatedDoctorCard";
 
 const TopRatedDoctors = async () => {
   const res = await fetch(
@@ -22,7 +22,7 @@ const TopRatedDoctors = async () => {
         >
           <div className="container mx-auto px-4 py-10 relative z-10">
             <Suspense fallback={<div>Loading doctors...</div>}>
-              <TopRatedDoctorCard doctors={doctors} />
+              <DoctorCard doctors={doctors} />
             </Suspense>
           </div>
         </div>

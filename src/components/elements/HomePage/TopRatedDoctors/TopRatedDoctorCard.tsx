@@ -8,7 +8,7 @@ import Link from "next/link";
 import { buttonVariants, cardVariants, containerVariants, titleVariants } from "@/Transition/topRatedDoctor.transition";
 import { Doctor } from "@/types";
 
-const TopRatedDoctorCard = ({ doctors }: { doctors: Doctor[] }) => {
+const DoctorCard = ({ doctors }: { doctors: Doctor[] }) => {
   return (
     <div className="w-full">
       <motion.div
@@ -101,7 +101,7 @@ const TopRatedDoctorCard = ({ doctors }: { doctors: Doctor[] }) => {
           whileTap="tap"
         >
           <Link
-            href="/doctor"
+            href="/doctors"
             className="inline-flex items-center justify-center px-6 py-3 border border-blue-500 text-blue-500 rounded-lg hover:bg-blue-50 transition-colors duration-300 font-medium"
           >
             View All Doctors
@@ -112,4 +112,4 @@ const TopRatedDoctorCard = ({ doctors }: { doctors: Doctor[] }) => {
   );
 };
 
-export default TopRatedDoctorCard;
+export default DoctorCard;
