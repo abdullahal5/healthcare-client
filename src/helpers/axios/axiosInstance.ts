@@ -28,18 +28,33 @@ instance.interceptors.response.use(
     return response;
   },
   async function (error) {
-    const response = await getNewAccessToken();
-    const accessToken = response?.data?.data?.accessToken;
-    const config = error?.config;
+    const originalRequest = error.config;
 
-    if ((error?.response?.status === 400 || 500) && !config?.sent) {
-      config.sent = true;
-      config.headers.Authorization = accessToken;
-      setToLocalStorage(authKey, accessToken);
-      setAccessToken(accessToken);
+    const isRefreshCall = originalRequest?.url?.includes("/auth/refresh-token");
+    const shouldRetry =
+      (error?.response?.status === 401 || error?.response?.status === 403) &&
+      !originalRequest?.__isRetryRequest &&
+      !isRefreshCall;
 
-      return instance(config);
+    if (shouldRetry) {
+      try {
+        const response = await getNewAccessToken();
+        const newAccessToken = response?.data?.data?.accessToken;
+
+        setToLocalStorage(authKey, newAccessToken);
+        setAccessToken(newAccessToken);
+
+        originalRequest.__isRetryRequest = true;
+        originalRequest.headers.Authorization = newAccessToken;
+
+        return instance(originalRequest);
+      } catch (refreshError) {
+        // Optional: logout or redirect if refresh fails
+        console.error("🔴 Refresh token failed:", refreshError);
+        return Promise.reject(refreshError);
+      }
     }
+
     return Promise.reject(error);
   }
 );

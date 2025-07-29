@@ -74,8 +74,6 @@ const CreateScheduleModal = ({
     }
   };
 
-  console.log(schedulesData?.schedules);
-
   function getTimeIn12HourFormat(dateTimeString: Date) {
     const date: Date = new Date(dateTimeString);
     const hours: number = date.getHours();

@@ -155,7 +155,6 @@ const Schedules = () => {
     ? Math.ceil(schedulesData.meta.total / pagination.limit)
     : 0;
 
-    console.log(totalPages);
 
   return (
     <>

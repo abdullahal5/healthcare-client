@@ -24,7 +24,6 @@ const ChangePassword = () => {
   const onSubmit = async (values: FieldValues) => {
     const res = await changePassword(values);
 
-    console.log(res);
     try {
       if (res?.error) {
         toast.error("Password do not matched");
