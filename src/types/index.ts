@@ -220,8 +220,8 @@ export type MedicalReport = {
 
 export type Schedule = {
   id: string;
-  startDateTime: Date;
-  endDateTime: Date;
+  startDateTime: string;
+  endDateTime: string;
   createdAt: Date;
   updatedAt: Date;
   doctorSchedules: DoctorSchedules[];

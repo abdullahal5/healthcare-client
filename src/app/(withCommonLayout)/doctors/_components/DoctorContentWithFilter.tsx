@@ -30,6 +30,7 @@ import Image from "next/image";
 import type { Doctor } from "@/types";
 import { useGetAllSpecialtiesQuery } from "@/redux/api/specialtiesApi";
 import DoctorRowCard from "./DoctorRowCard";
+import Link from "next/link";
 
 type ViewMode = "grid" | "row";
 type SortOrder = "asc" | "desc";
@@ -576,12 +577,14 @@ export default function DoctorContentWithFilter() {
                           <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium">
                             Book Now
                           </Button>
-                          <Button
-                            variant="outline"
-                            className="border-blue-500 text-blue-500 hover:bg-blue-50 font-medium bg-transparent"
-                          >
-                            View Profile
-                          </Button>
+                          <Link className="w-full" href={`/doctors/${doctor.id}`}>
+                            <Button
+                              variant="outline"
+                              className="border-blue-500 w-full text-blue-500 hover:bg-blue-50 font-medium bg-transparent"
+                            >
+                              View Profile
+                            </Button>
+                          </Link>
                         </div>
                       </CardContent>
                     </Card>
