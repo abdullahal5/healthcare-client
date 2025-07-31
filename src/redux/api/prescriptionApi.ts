@@ -1,5 +1,7 @@
+import { Prescription } from "@/types";
 import { tagTypes } from "../tag-types";
 import { baseApi } from "./baseApi";
+import { IMeta } from "@/types/common";
 
 export const prescriptionApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
@@ -19,10 +21,17 @@ export const prescriptionApi = baseApi.injectEndpoints({
     }),
 
     getMyPrescriptions: build.query({
-      query: () => ({
+      query: (arg: Record<string, any>) => ({
         url: "/prescription/my-prescription",
         method: "GET",
+        params: arg,
       }),
+      transformResponse: (response: Prescription[], meta: IMeta) => {
+        return {
+          prescriptions: response,
+          meta,
+        };
+      },
       providesTags: [tagTypes.prescription],
     }),
 
