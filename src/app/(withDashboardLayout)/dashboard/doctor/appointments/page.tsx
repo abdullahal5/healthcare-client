@@ -15,7 +15,6 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import { renderSortableHeader } from "@/components/Shared/table/utils";
 import { useRouter, useSearchParams } from "next/navigation";
 import { format } from "date-fns";
@@ -27,11 +26,13 @@ import {
 } from "@/redux/api/appointmentApi";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import { cn } from "@/lib/utils";
-import { Check, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
+import CreatePrescriptionModal from "./_components/CreatePrescriptionModal";
+import { useModalQuery } from "@/hooks/useModalQuery";
+import { AppointmentStatusUpdate } from "./_components/UpdateStatus";
 
 const Appointments = () => {
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -46,20 +47,12 @@ const Appointments = () => {
 
   const [updateStatus] = useAppointmentStatusChangeMutation();
 
-  const appointmentIdFromViewParams = searchParams.get("view");
-  const isViewModalOpen = !!appointmentIdFromViewParams;
-
-  const openViewModal = (id: string) => {
-    const params = new URLSearchParams(searchParams);
-    params.set("view", id);
-    router.push(`?${params.toString()}`);
-  };
-
-  const closeModal = () => {
-    const params = new URLSearchParams(searchParams);
-    params.delete("view");
-    router.push(`?${params.toString()}`);
-  };
+  const {
+    id: createId,
+    isOpen: isCreateModalOpen,
+    openModal: openCreateModal,
+    closeModal: closeCreateModal,
+  } = useModalQuery("create");
 
   const {
     data: appointmentData,
@@ -84,7 +77,6 @@ const Appointments = () => {
     setSorting({ sortBy, sortOrder });
     setPagination((prev) => ({ ...prev, page: 1 }));
   };
-
 
   const columns: ColumnDef<Appointment>[] = [
     {
@@ -251,8 +243,13 @@ const Appointments = () => {
                 </DropdownMenuItem>
               )}
               {appointment.status === "COMPLETED" && (
-                <DropdownMenuItem className="text-blue-600">
-                  View Medical Report
+                <DropdownMenuItem
+                  onClick={() => openCreateModal(appointment?.id)}
+                  className="text-blue-600"
+                >
+                  {appointment?.prescription
+                    ? "Update Prescription"
+                    : "Create Prescription"}
                 </DropdownMenuItem>
               )}
             </DropdownMenuContent>
@@ -307,70 +304,16 @@ const Appointments = () => {
           appointmentId={appointmentIdFromViewParams}
         />
       )} */}
+
+      {isCreateModalOpen && (
+        <CreatePrescriptionModal
+          open={true}
+          setOpen={closeCreateModal}
+          appointmentId={createId as string}
+        />
+      )}
     </>
   );
 };
 
 export default Appointments;
-
-const statusOptions = [
-  {
-    value: "SCHEDULED",
-    label: "Scheduled",
-    color: "bg-blue-100 text-blue-800",
-  },
-  {
-    value: "INPROGRESS",
-    label: "In Progress",
-    color: "bg-purple-100 text-purple-800",
-  },
-  {
-    value: "COMPLETED",
-    label: "Completed",
-    color: "bg-green-100 text-green-800",
-  },
-  { value: "CANCELED", label: "Canceled", color: "bg-red-100 text-red-800" },
-];
-
-export function AppointmentStatusUpdate({
-  currentStatus,
-  onStatusChange,
-}: {
-  currentStatus: AppointmentStatus;
-  onStatusChange: (newStatus: AppointmentStatus) => void;
-}) {
-  const currentOption =
-    statusOptions.find((opt) => opt.value === currentStatus) ||
-    statusOptions[0];
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
-          className={cn(
-            "flex items-center gap-2 pl-3 pr-2 h-8",
-            currentOption.color,
-            "hover:bg-opacity-80"
-          )}
-        >
-          <span>{currentOption.label}</span>
-          <ChevronDown className="h-4 w-4 opacity-50" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-48 p-1 bg-white">
-        {statusOptions.map((option) => (
-          <DropdownMenuItem
-            key={option.value}
-            onClick={() => onStatusChange(option.value as AppointmentStatus)}
-            className="flex items-center gap-2 p-2"
-          >
-            <div className={cn("w-2 h-2 rounded-full", option.color)} />
-            <span className="flex-1">{option.label}</span>
-            {currentStatus === option.value && <Check className="h-4 w-4" />}
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-}

@@ -49,7 +49,7 @@ const HCInput = ({
                 type={inputType}
                 id={name}
                 placeholder={placeholder}
-                className={`pl-10 border-slate-300 focus-visible:ring-primary/50 ${
+                className={`pl-10 w-full mx-auto border-slate-300 focus-visible:ring-primary/50 ${
                   size === "sm" ? "h-8" : size === "lg" ? "h-10" : "h-9"
                 } ${className} ${type === "password" ? "pr-10" : ""} ${
                   Icon ? "pl-10" : ""

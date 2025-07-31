@@ -19,6 +19,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@radix-ui/react-progress";
 import DoctorScheduleSlot from "../_components/DoctorScheduleSlot";
+import { Doctor } from "@/types";
 
 const reviews = [
   {
@@ -50,13 +51,13 @@ const reviews = [
   },
 ];
 
-type PropTypes = {
-  params: {
+type PageProps = {
+  params: Promise<{
     slug: string;
-  };
-};
+  }>;
+}
 
-export default async function Page({ params }: PropTypes) {
+export default async function Page({ params }: PageProps) {
   const { slug } = await params;
 
   const res = await fetch(
@@ -64,7 +65,7 @@ export default async function Page({ params }: PropTypes) {
   );
   const { data: doctor } = await res.json();
 
-  const doctorData = doctor;
+  const doctorData = doctor as Doctor;
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
@@ -98,10 +99,7 @@ export default async function Page({ params }: PropTypes) {
                         className="object-cover"
                       />
                       <AvatarFallback className="bg-blue-500 text-2xl font-bold text-white">
-                        {doctorData.name
-                          .split(" ")
-                          .map((n: any[]) => n[0])
-                          .join("")}
+                        {doctorData.name.split(" ")[0]}
                       </AvatarFallback>
                     </Avatar>
                     <Badge className="absolute -bottom-3 left-1/2 -translate-x-1/2 shadow-md px-4 py-1.5 bg-white text-blue-600 hover:bg-white/90">

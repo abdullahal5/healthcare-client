@@ -1,13 +1,18 @@
 import VideoCall from "./_components/VideoCall";
 
-const VideoCallingPage = ({
-  searchParams,
-}: {
-  searchParams: { videoCallingId: string };
-}) => {
+type VideoCallingPageProps = {
+  searchParams: Promise<{
+    videoCallingId?: string;
+  }>;
+};
+
+const VideoCallingPage = async ({ searchParams }: VideoCallingPageProps) => {
+  const resolvedSearchParams = await searchParams;
+  const videoCallingId = resolvedSearchParams.videoCallingId || "";
+
   return (
     <div>
-      <VideoCall videoCallingId={searchParams?.videoCallingId} />
+      <VideoCall videoCallingId={videoCallingId} />
     </div>
   );
 };

@@ -24,6 +24,8 @@ import { Appointment } from "@/types";
 import { useGetMyAppointmentsQuery } from "@/redux/api/appointmentApi";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { useInitialPaymentMutation } from "@/redux/api/paymentApi";
+import { toast } from "sonner";
 
 const Appointments = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -38,6 +40,9 @@ const Appointments = () => {
 
   const searchParams = useSearchParams();
   const router = useRouter();
+
+  const [initialPayment, { isLoading: initialPaymentLoading }] =
+    useInitialPaymentMutation();
 
   const appointmentIdFromViewParams = searchParams.get("view");
   const isViewModalOpen = !!appointmentIdFromViewParams;
@@ -107,6 +112,24 @@ const Appointments = () => {
         );
       default:
         return <Badge variant="outline">Unknown</Badge>;
+    }
+  };
+
+  const handleTryAgainPayment = async (id: string) => {
+    if (id) {
+      const response = await initialPayment(id).unwrap();
+
+      console.log(response);
+
+      if (response.paymentUrl) {
+        if (response.paymentUrl && typeof window !== "undefined") {
+          window.location.replace(response.paymentUrl);
+        } else {
+          toast.error("Payment URL not available or window undefined.");
+        }
+      }
+    } else {
+      toast.error("Schedule ID not found.");
     }
   };
 
@@ -182,11 +205,7 @@ const Appointments = () => {
         const status = row.getValue("status") as string;
         const paymentStatus = row.original.paymentStatus;
 
-        return (
-          <div>
-            {getStatusBadge(status)}
-          </div>
-        );
+        return <div>{getStatusBadge(status)}</div>;
       },
     },
     {
@@ -262,8 +281,37 @@ const Appointments = () => {
               {appointment.paymentStatus === "UNPAID" && (
                 <>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="text-green-600">
-                    Make Payment
+                  <DropdownMenuItem
+                    onClick={() => handleTryAgainPayment(appointment?.id)}
+                    className="text-green-600"
+                  >
+                    {initialPaymentLoading ? (
+                      <>
+                        <svg
+                          className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                        Processing...
+                      </>
+                    ) : (
+                      "Make Payment"
+                    )}
                   </DropdownMenuItem>
                 </>
               )}
