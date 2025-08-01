@@ -119,8 +119,6 @@ const Appointments = () => {
     if (id) {
       const response = await initialPayment(id).unwrap();
 
-      console.log(response);
-
       if (response.paymentUrl) {
         if (response.paymentUrl && typeof window !== "undefined") {
           window.location.replace(response.paymentUrl);

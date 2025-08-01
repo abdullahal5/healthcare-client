@@ -2,7 +2,7 @@
 import EmptyState from "@/components/Shared/DashboardUtils/EmptyState";
 import PageHeader from "@/components/Shared/DashboardUtils/PageHeader";
 import { DataTable } from "@/components/Shared/table/DataTable";
-import { MoreHorizontal, Video } from "lucide-react";
+import { Eye, MoreHorizontal, Video } from "lucide-react";
 import { useState } from "react";
 import {
   DropdownMenu,
@@ -18,7 +18,6 @@ import { Button } from "@/components/ui/button";
 import { renderSortableHeader } from "@/components/Shared/table/utils";
 import { useRouter, useSearchParams } from "next/navigation";
 import { format } from "date-fns";
-import { Badge } from "@/components/ui/badge";
 import { Appointment, AppointmentStatus } from "@/types";
 import {
   useAppointmentStatusChangeMutation,
@@ -110,6 +109,7 @@ const Appointments = () => {
           <div className="flex items-center gap-3">
             <Avatar>
               <AvatarImage
+                className="w-14 h-14 object-cover rounded-full"
                 src={patient?.profilePhoto || "/placeholder-patient.jpg"}
                 alt={patient?.name}
               />
@@ -211,6 +211,20 @@ const Appointments = () => {
           <Video />
         </Link>
       ),
+    },
+    {
+      accessorKey: "Profile",
+      header: "Profile",
+      cell: ({ row }) => {
+        return (
+          <Link href={`/dashboard/profile?id=${row.original?.patientId}`}>
+            <Button variant="outline" className="border-neutral-300">
+              <Eye />
+              View Profile
+            </Button>
+          </Link>
+        );
+      },
     },
     {
       id: "actions",

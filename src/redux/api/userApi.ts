@@ -4,9 +4,10 @@ import { tagTypes } from "../tag-types";
 export const userApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
     getSingleUser: build.query({
-      query: () => ({
+      query: (args: Record<string, unknown>) => ({
         url: "/user/me",
         method: "GET",
+        params: args
       }),
       providesTags: [tagTypes.user],
     }),
