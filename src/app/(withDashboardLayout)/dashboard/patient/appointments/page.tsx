@@ -2,7 +2,7 @@
 import EmptyState from "@/components/Shared/DashboardUtils/EmptyState";
 import PageHeader from "@/components/Shared/DashboardUtils/PageHeader";
 import { DataTable } from "@/components/Shared/table/DataTable";
-import { MoreHorizontal, Video } from "lucide-react";
+import { MoreHorizontal, Star, Video } from "lucide-react";
 import { useState } from "react";
 import {
   DropdownMenu,
@@ -15,7 +15,6 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import { renderSortableHeader } from "@/components/Shared/table/utils";
 import { useRouter, useSearchParams } from "next/navigation";
 import { format } from "date-fns";
@@ -26,6 +25,9 @@ import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { useInitialPaymentMutation } from "@/redux/api/paymentApi";
 import { toast } from "sonner";
+import { useModalQuery } from "@/hooks/useModalQuery";
+import ReviewModal from "./_components/ReviewModal";
+import { StarRating } from "./_components/StarRating";
 
 const Appointments = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -44,20 +46,12 @@ const Appointments = () => {
   const [initialPayment, { isLoading: initialPaymentLoading }] =
     useInitialPaymentMutation();
 
-  const appointmentIdFromViewParams = searchParams.get("view");
-  const isViewModalOpen = !!appointmentIdFromViewParams;
-
-  const openViewModal = (id: string) => {
-    const params = new URLSearchParams(searchParams);
-    params.set("view", id);
-    router.push(`?${params.toString()}`);
-  };
-
-  const closeModal = () => {
-    const params = new URLSearchParams(searchParams);
-    params.delete("view");
-    router.push(`?${params.toString()}`);
-  };
+  const {
+    id: appointmentId,
+    isOpen: isCreateModalOpen,
+    openModal: openCreateModal,
+    closeModal: closeCreateModal,
+  } = useModalQuery("appointmentId");
 
   const {
     data: appointmentData,
@@ -257,6 +251,36 @@ const Appointments = () => {
       ),
     },
     {
+      accessorKey: "Review",
+      header: "Review",
+      cell: ({ row }) => {
+        const review = row.original?.review;
+        return (
+          <div>
+            {review ? (
+              <div className="bg-gray-100 p-4 rounded-md mt-4">
+                <h3 className="font-semibold mb-1">Your Review</h3>
+                <StarRating size={12} value={review.rating as number} disabled />
+                <p className="mt-1 text-sm text-gray-700">
+                  {review.comment}
+                </p>
+              </div>
+            ) : (
+              <Button
+                disabled={row.original?.status !== "COMPLETED"}
+                onClick={() => openCreateModal(row?.original?.id)}
+                className="text-sm border-neutral-300 hover:bg-[#2C92FD] duration-200 hover:text-white"
+                variant="outline"
+              >
+                <Star />
+                Review
+              </Button>
+            )}
+          </div>
+        );
+      },
+    },
+    {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => {
@@ -363,14 +387,13 @@ const Appointments = () => {
         )}
       </div>
 
-      {/* view appointment modal */}
-      {/* {isViewModalOpen && (
-        <ViewAppointmentModal
+      {isCreateModalOpen && (
+        <ReviewModal
           open={true}
-          setOpen={closeModal}
-          appointmentId={appointmentIdFromViewParams}
+          setOpen={closeCreateModal}
+          appointmentId={appointmentId as string}
         />
-      )} */}
+      )}
     </>
   );
 };

@@ -10,6 +10,7 @@ import {
   LayoutDashboard,
   LayoutDashboardIcon,
   LucideIcon,
+  PenSquare,
   Star,
   Trophy,
   User,
@@ -125,6 +126,11 @@ export const menuItems = (role: UserRole): IRoleMenus[] => {
           title: "Payment History",
           path: `${role}/payment-history`,
           icon: DollarSign,
+        },
+        {
+          title: "Review",
+          path: `${role}/reviews`,
+          icon: PenSquare,
         }
       );
       break;

@@ -290,8 +290,8 @@ export type Review = {
   appointmentId: string;
   rating: number;
   comment: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
   patient: Patient;
   doctor: Doctor;
   appointment: Appointment;

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { type FieldValues, useForm } from "react-hook-form";
+import { type FieldValues, useForm, useFormContext } from "react-hook-form";
 import {
   CheckCircle2,
   Lock,
@@ -12,6 +12,7 @@ import {
   ArrowRight,
   ArrowLeft,
   Clock,
+  User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,6 +25,7 @@ import {
 import { Form } from "@/components/ui/form";
 import HCForm from "@/components/Forms/HCForm";
 import HCInput from "@/components/Forms/HCInput";
+import HCSelect from "@/components/Forms/HCSelect";
 import {
   loginContainerVariants,
   loginItemVariants,
@@ -35,8 +37,15 @@ import { toast } from "sonner";
 import { storeUserInfo } from "@/services/auth.services";
 import { useRouter } from "next/navigation";
 import { useForgotPasswordMutation } from "@/redux/api/authApi";
+import { defaultCredentials, roleOptions } from "@/constant/login";
 
-// Schema for forgot password
+// Updated schema to include role
+const loginSchema = z.object({
+  role: z.enum(["admin", "doctor", "patient", "superAdmin"]),
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
 const forgotPasswordSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
 });
@@ -76,15 +85,7 @@ export default function LoginPage() {
   const [resendTimer, setResendTimer] = useState(0);
   const [forgotPassword, { isLoading: forgotPasswordLoading }] =
     useForgotPasswordMutation();
-
-  // Login form
-  const loginForm = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "super@admin.com",
-      password: "superadmin",
-    },
-  });
+  const router = useRouter();
 
   // Forgot password form
   const forgotPasswordForm = useForm<z.infer<typeof forgotPasswordSchema>>({
@@ -116,8 +117,16 @@ export default function LoginPage() {
         if (res.data) {
           const { accessToken } = res.data;
           storeUserInfo(accessToken);
+
+          // Redirect based on role
+          if (data.role === "admin") {
+            router.push("/dashboard/admin");
+          } else if (data.role === "doctor") {
+            router.push("/dashboard/doctor");
+          } else {
+            router.push("/dashboard/patient");
+          }
         }
-        // router.push("/dashboard");
       }
     } catch (error) {
       toast.error("An error occurred during login");
@@ -130,10 +139,12 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       const res = await forgotPassword(data);
-      if(res.error){
+      if (res.error) {
         toast.error("Something is wrong");
       } else {
         toast.success(res.data.message);
+        setEmailSent(true);
+        setResendTimer(120); // 2 minutes timer
       }
     } catch (error) {
       toast.error("Failed to send reset email");
@@ -146,14 +157,14 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       const email = forgotPasswordForm.getValues("email");
-      // Replace with your resend email API call
-      // const res = await sendForgotPasswordEmail(email);
+      const res = await forgotPassword({ email });
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      toast.success("Password reset email sent again!");
-      setResendTimer(120); // Reset timer to 2 minutes
+      if (res.error) {
+        toast.error("Failed to resend email");
+      } else {
+        toast.success("Password reset email sent again!");
+        setResendTimer(120); // Reset timer to 2 minutes
+      }
     } catch (error) {
       toast.error("Failed to resend email");
     } finally {
@@ -180,6 +191,42 @@ export default function LoginPage() {
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
+
+  // Login form
+  const loginForm = useForm<z.infer<typeof loginSchema>>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      role: "admin",
+      email: defaultCredentials.admin.email,
+      password: defaultCredentials.admin.password,
+    },
+  });
+
+  const handleRoleChange = (
+    role: "admin" | "doctor" | "patient" | "superAdmin"
+  ) => {
+    loginForm.reset({
+      role,
+      email: defaultCredentials[role].email,
+      password: defaultCredentials[role].password,
+    });
+  };
+
+  const RoleWatcher = ({ defaultCredentials }: { defaultCredentials: any }) => {
+    const { watch, setValue } = useFormContext();
+    const role = watch("role");
+
+    useEffect(() => {
+      if (role && defaultCredentials[role]) {
+        setValue("email", defaultCredentials[role].email);
+        setValue("password", defaultCredentials[role].password);
+      }
+    }, [role, setValue, defaultCredentials]);
+
+    return null;
+  };
+
+  const defaultRole = "superAdmin";
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-4">
@@ -222,16 +269,36 @@ export default function LoginPage() {
                     <Form {...loginForm}>
                       <HCForm
                         defaultValues={{
-                          email: "super@admin.com",
-                          password: "superadmin",
+                          role: defaultRole,
+                          email: defaultCredentials[defaultRole].email,
+                          password: defaultCredentials[defaultRole].password,
                         }}
-                        resolver={zodResolver(formSchema)}
+                        resolver={zodResolver(loginSchema)}
                         onSubmit={onLoginSubmit}
                       >
+                        <RoleWatcher defaultCredentials={defaultCredentials} />
                         <motion.div
                           variants={loginItemVariants}
                           className="space-y-6"
                         >
+                          <HCSelect
+                            name="role"
+                            label="Login as"
+                            placeholder="Select your role"
+                            options={roleOptions}
+                            size="lg"
+                            onChange={(role) =>
+                              handleRoleChange(
+                                role as
+                                  | "admin"
+                                  | "doctor"
+                                  | "patient"
+                                  | "superAdmin"
+                              )
+                            }
+                            required
+                          />
+
                           <HCInput
                             label="Email"
                             placeholder="jhondoe@gmail.com"

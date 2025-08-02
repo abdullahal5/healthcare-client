@@ -27,6 +27,7 @@ type HCSelectProps = {
   className?: string;
   required?: boolean;
   disabled?: boolean;
+  onChange?: (value: string) => void;
   group?: {
     label: string;
     options: TOption[];
@@ -42,6 +43,7 @@ const HCSelect = ({
   className = "",
   required,
   disabled,
+  onChange,
   group,
 }: HCSelectProps) => {
   const { control } = useFormContext();
@@ -65,7 +67,10 @@ const HCSelect = ({
             </FormLabel>
           )}
           <Select
-            onValueChange={field.onChange}
+            onValueChange={(value) => {
+              field.onChange(value);
+              onChange?.(value);
+            }}
             value={field.value}
             disabled={disabled}
           >

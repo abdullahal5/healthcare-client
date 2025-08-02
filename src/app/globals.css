@@ -11,6 +11,12 @@
   font-family: "Roboto Condensed", sans-serif;
 }
 
+@layer components {
+  .progress-fill {
+    @apply bg-blue-500; /* Change fill color */
+  }
+}
+
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;

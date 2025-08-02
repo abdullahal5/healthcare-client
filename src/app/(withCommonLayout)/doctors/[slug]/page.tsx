@@ -14,48 +14,17 @@ import {
   Share2,
   Award,
   Stethoscope,
-  CheckCircle,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Progress } from "@radix-ui/react-progress";
 import DoctorScheduleSlot from "../_components/DoctorScheduleSlot";
 import { Doctor } from "@/types";
-
-const reviews = [
-  {
-    id: 1,
-    patientName: "Jennifer M.",
-    rating: 5,
-    date: "2 days ago",
-    comment:
-      "Dr. Chen is absolutely wonderful with children. My 5-year-old was scared, but she made him feel comfortable immediately. Very thorough examination and clear explanations.",
-    verified: true,
-  },
-  {
-    id: 2,
-    patientName: "Michael R.",
-    rating: 5,
-    date: "1 week ago",
-    comment:
-      "Excellent pediatrician! She diagnosed my daughter's condition quickly and the treatment plan worked perfectly. Highly recommend!",
-    verified: true,
-  },
-  {
-    id: 3,
-    patientName: "Sarah L.",
-    rating: 4,
-    date: "2 weeks ago",
-    comment:
-      "Very professional and knowledgeable. The only downside was the wait time, but the quality of care made up for it.",
-    verified: true,
-  },
-];
+import DoctorReviews from "../_components/DoctorReviews";
 
 type PageProps = {
   params: Promise<{
     slug: string;
   }>;
-}
+};
 
 export default async function Page({ params }: PageProps) {
   const { slug } = await params;
@@ -123,7 +92,7 @@ export default async function Page({ params }: PageProps) {
                       <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-full">
                         <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                         <span className="font-semibold text-white">
-                          {doctorData.averageRating}
+                          {doctorData.averageRating?.toFixed(1)}
                         </span>
                         <span className="text-blue-100/80 text-sm">Rating</span>
                       </div>
@@ -254,10 +223,10 @@ export default async function Page({ params }: PageProps) {
           {/* Main Content Area */}
           <div className="lg:col-span-2 space-y-6 overflow-y-auto max-h-[calc(100vh-200px)] pr-2">
             <Tabs defaultValue="appointment" className="w-full">
-              <TabsList className="grid w-full grid-cols-3 lg:gap-5 md:gap-5 gap-2 bg-blue-50">
+              <TabsList className="flex w-full lg:flex-row md:flex-row flex-col  md:gap-5 gap-2 bg-blue-50">
                 <TabsTrigger
                   value="appointment"
-                  className="py-4 data-[state=active]:bg-blue-500 data-[state=active]:text-white border border-neutral-300 flex items-center justify-center"
+                  className="py-4 data-[state=active]:bg-blue-500 data-[state=active]:text-white border border-neutral-300 flex items-center justify-center flex-1"
                 >
                   <Calendar className="h-5 w-5 mr-0 sm:mr-2" />
                   <span className="hidden sm:inline">Book Appointment</span>
@@ -265,19 +234,21 @@ export default async function Page({ params }: PageProps) {
 
                 <TabsTrigger
                   value="reviews"
-                  className="py-4 data-[state=active]:bg-blue-500 data-[state=active]:text-white border border-neutral-300 flex items-center justify-center"
+                  className="py-4 data-[state=active]:bg-blue-500 data-[state=active]:text-white border border-neutral-300 flex items-center justify-center flex-1"
                 >
                   <Star className="h-5 w-5 mr-0 sm:mr-2" />
-                  <span className="hidden sm:inline">Reviews (24)</span>
+                  <span className="hidden sm:inline">
+                    Reviews ({doctorData?.review?.length})
+                  </span>
                 </TabsTrigger>
 
-                <TabsTrigger
+                {/* <TabsTrigger
                   value="about"
                   className="py-4 data-[state=active]:bg-blue-500 data-[state=active]:text-white border border-neutral-300 flex items-center justify-center"
                 >
                   <GraduationCap className="h-5 w-5 mr-0 sm:mr-2" />
                   <span className="hidden sm:inline">About</span>
-                </TabsTrigger>
+                </TabsTrigger> */}
               </TabsList>
 
               <TabsContent value="appointment">
@@ -285,124 +256,13 @@ export default async function Page({ params }: PageProps) {
               </TabsContent>
 
               <TabsContent value="reviews">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center justify-between">
-                      <span>Patient Reviews</span>
-                      <div className="flex items-center gap-2">
-                        <div className="flex">
-                          {renderStars(Math.floor(doctorData.averageRating))}
-                        </div>
-                        <span className="font-bold text-lg">
-                          {doctorData.averageRating}
-                        </span>
-                        <span className="text-gray-500">(247 reviews)</span>
-                      </div>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    {/* Rating Breakdown */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-3">
-                        <h4 className="font-semibold">Rating Breakdown</h4>
-                        {[5, 4, 3, 2, 1].map((rating) => (
-                          <div key={rating} className="flex items-center gap-3">
-                            <span className="text-sm w-8">{rating} ★</span>
-                            <Progress
-                              value={
-                                rating === 5
-                                  ? 85
-                                  : rating === 4
-                                  ? 12
-                                  : rating === 3
-                                  ? 2
-                                  : rating === 2
-                                  ? 1
-                                  : 0
-                              }
-                              className="flex-1 h-2"
-                            />
-                            <span className="text-sm text-gray-500 w-12">
-                              {rating === 5
-                                ? "85%"
-                                : rating === 4
-                                ? "12%"
-                                : rating === 3
-                                ? "2%"
-                                : rating === 2
-                                ? "1%"
-                                : "0%"}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                      <div className="space-y-3">
-                        <h4 className="font-semibold">Most Mentioned</h4>
-                        <div className="flex flex-wrap gap-2">
-                          <Badge variant="secondary">Professional</Badge>
-                          <Badge variant="secondary">Great with kids</Badge>
-                          <Badge variant="secondary">Thorough</Badge>
-                          <Badge variant="secondary">Caring</Badge>
-                          <Badge variant="secondary">Knowledgeable</Badge>
-                        </div>
-                      </div>
-                    </div>
-
-                    <Separator />
-
-                    {/* Individual Reviews */}
-                    <div className="space-y-6">
-                      <h4 className="font-semibold">Recent Reviews</h4>
-                      {reviews.map((review) => (
-                        <div
-                          key={review.id}
-                          className="border rounded-lg p-4 space-y-3"
-                        >
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                              <Avatar className="h-10 w-10">
-                                <AvatarFallback className="bg-blue-100 text-blue-600">
-                                  {review.patientName
-                                    .split(" ")
-                                    .map((n) => n[0])
-                                    .join("")}
-                                </AvatarFallback>
-                              </Avatar>
-                              <div>
-                                <div className="flex items-center gap-2">
-                                  <span className="font-medium">
-                                    {review.patientName}
-                                  </span>
-                                  {review.verified && (
-                                    <Badge
-                                      variant="secondary"
-                                      className="text-xs"
-                                    >
-                                      <CheckCircle className="h-3 w-3 mr-1" />
-                                      Verified
-                                    </Badge>
-                                  )}
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <div className="flex">
-                                    {renderStars(review.rating)}
-                                  </div>
-                                  <span className="text-sm text-gray-500">
-                                    {review.date}
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          <p className="text-gray-700">{review.comment}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
+                <DoctorReviews
+                  reviews={doctorData.review}
+                  averageRating={doctorData.averageRating}
+                />
               </TabsContent>
 
-              <TabsContent value="about">
+              {/* <TabsContent value="about">
                 <Card>
                   <CardHeader>
                     <CardTitle>About Doctor</CardTitle>
@@ -411,7 +271,7 @@ export default async function Page({ params }: PageProps) {
                     <p>Detailed about doctor content will go here</p>
                   </CardContent>
                 </Card>
-              </TabsContent>
+              </TabsContent> */}
             </Tabs>
           </div>
         </div>
