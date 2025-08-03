@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -11,7 +10,6 @@ import {
   GraduationCap,
   Briefcase,
   DollarSign,
-  Share2,
   Award,
   Stethoscope,
 } from "lucide-react";
@@ -19,6 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DoctorScheduleSlot from "../_components/DoctorScheduleSlot";
 import { Doctor } from "@/types";
 import DoctorReviews from "../_components/DoctorReviews";
+import CopyUrl from "../_components/utils/CopyUrl";
 
 type PageProps = {
   params: Promise<{
@@ -36,16 +35,9 @@ export default async function Page({ params }: PageProps) {
 
   const doctorData = doctor as Doctor;
 
-  const renderStars = (rating: number) => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <Star
-        key={i}
-        className={`h-4 w-4 ${
-          i < rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
-        }`}
-      />
-    ));
-  };
+  const specialist = doctorData?.doctorSpecialties?.map(
+    (spec) => spec?.specialities?.title
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50/50 to-indigo-100/50 p-4 md:p-8">
@@ -113,15 +105,7 @@ export default async function Page({ params }: PageProps) {
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="flex gap-3">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="rounded-full bg-white/10 hover:bg-white/20 text-white"
-                    >
-                      <Share2 className="h-5 w-5" />
-                    </Button>
-                  </div>
+                  <CopyUrl />
                 </div>
               </div>
             </div>
@@ -203,18 +187,15 @@ export default async function Page({ params }: PageProps) {
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-2">
-                  <Badge variant="outline" className="px-3 py-1 text-sm">
-                    Pediatrics
-                  </Badge>
-                  <Badge variant="outline" className="px-3 py-1 text-sm">
-                    Child Nutrition
-                  </Badge>
-                  <Badge variant="outline" className="px-3 py-1 text-sm">
-                    Vaccination
-                  </Badge>
-                  <Badge variant="outline" className="px-3 py-1 text-sm">
-                    Growth Monitoring
-                  </Badge>
+                  {specialist?.map((title, idx) => (
+                    <Badge
+                      key={idx}
+                      variant="outline"
+                      className="px-3 py-1 text-sm border border-neutral-300"
+                    >
+                      {title}
+                    </Badge>
+                  ))}
                 </div>
               </CardContent>
             </Card>

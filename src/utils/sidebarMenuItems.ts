@@ -73,6 +73,11 @@ export const menuItems = (role: UserRole): IRoleMenus[] => {
           icon: User,
         },
         {
+          title: "Patients",
+          path: `${role}/patients`,
+          icon: User,
+        },
+        {
           title: "Schedules",
           path: `${role}/schedules`,
           icon: Calendar,

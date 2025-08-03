@@ -4,8 +4,8 @@ export const defaultCredentials = {
     password: "superadmin",
   },
   admin: {
-    email: "admin@example.com",
-    password: "adminpass",
+    email: "admin@gmail.com",
+    password: "123456",
   },
   doctor: {
     email: "dr.sarah.pediatrics@childrenshospital.org",

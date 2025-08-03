@@ -2,11 +2,8 @@
 import EmptyState from "@/components/Shared/DashboardUtils/EmptyState";
 import PageHeader from "@/components/Shared/DashboardUtils/PageHeader";
 import { DataTable } from "@/components/Shared/table/DataTable";
-import {
-  useGetAllDoctorsQuery,
-  useHardDeleteDoctorMutation,
-  useSoftDeleteDoctorMutation,
-} from "@/redux/api/doctorApi";
+import { useGetAllPatientsQuery } from "@/redux/api/patientApi";
+import { Patient, UserStatus } from "@/types";
 import { MoreHorizontal, Plus } from "lucide-react";
 import { useState } from "react";
 import {
@@ -19,24 +16,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { ColumnDef } from "@tanstack/react-table";
-import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import type { Doctor, IDoctor } from "@/types/doctor";
 import { renderSortableHeader } from "@/components/Shared/table/utils";
-import CreateDoctorModal from "./components/CreateDoctorModal";
-import EditDoctorModal from "./components/EditDoctorModal";
-import { useRouter, useSearchParams } from "next/navigation";
-import ViewDoctorModal from "./components/ViewDoctorModal";
-import DeleteDoctorModal from "./components/DeleteDoctorModal";
-import { UserStatus } from "@/types";
 import { useChangeStatusMutation } from "@/redux/api/userApi";
-import { UserStatusUpdate } from "./components/UpdateUserStatus";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { UserStatusUpdate } from "../doctors/components/UpdateUserStatus";
+import { useModalQuery } from "@/hooks/useModalQuery";
+import ViewPatientModal from "./_components/ViewPatientModal";
 
-const Doctors = () => {
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
-  const [selectedDoctorId, setSelectedDoctorId] = useState<string>("");
+const PatientPage = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [pagination, setPagination] = useState({
     page: 1,
@@ -45,53 +34,13 @@ const Doctors = () => {
   const [sorting, setSorting] = useState<{
     sortBy: string;
     sortOrder: "asc" | "desc";
-  }>({ sortBy: "averageRating", sortOrder: "desc" });
-
-  const searchParams = useSearchParams();
-  const router = useRouter();
-
-  const [changeStatus] = useChangeStatusMutation();
-
-  const doctorIdFromEditParams = searchParams.get("edit");
-  const doctorIdFromViewParams = searchParams.get("view");
-
-  const isEditModalOpen = !!doctorIdFromEditParams;
-  const isViewModalOpen = !!doctorIdFromViewParams;
-
-  const openEditModal = (id: string) => {
-    const params = new URLSearchParams(searchParams);
-    params.set("edit", id);
-    params.delete("view");
-    router.push(`?${params.toString()}`);
-  };
-
-  const openViewModal = (id: string) => {
-    const params = new URLSearchParams(searchParams);
-    params.set("view", id);
-    params.delete("edit");
-    router.push(`?${params.toString()}`);
-  };
-
-  const closeModal = () => {
-    const params = new URLSearchParams(searchParams);
-    params.delete("edit");
-    params.delete("view");
-    router.push(`?${params.toString()}`);
-  };
-
-  const [softDeleteDoctor] = useSoftDeleteDoctorMutation();
-  const [hardDeleteDoctor] = useHardDeleteDoctorMutation();
-
-  const handleDeleteClick = (id: string) => {
-    setSelectedDoctorId(id);
-    setDeleteModalOpen(true);
-  };
+  }>({ sortBy: "createdAt", sortOrder: "desc" });
 
   const {
-    data: doctorData,
+    data: allPatients,
     isLoading,
     isFetching,
-  } = useGetAllDoctorsQuery({
+  } = useGetAllPatientsQuery({
     searchTerm,
     page: pagination.page,
     limit: pagination.limit,
@@ -99,8 +48,15 @@ const Doctors = () => {
     sortOrder: sorting.sortOrder,
   });
 
-  const totalPages = doctorData?.meta?.total
-    ? Math.ceil(doctorData.meta.total / pagination.limit)
+  const {
+    id: viewId,
+    isOpen: isViewModalOpen,
+    openModal: openViewModal,
+    closeModal: closeViewModal,
+  } = useModalQuery("view");
+
+  const totalPages = allPatients?.meta?.total
+    ? Math.ceil(allPatients.meta.total / pagination.limit)
     : 0;
 
   const handlePaginationChange = (page: number) => {
@@ -112,7 +68,9 @@ const Doctors = () => {
     setPagination((prev) => ({ ...prev, page: 1 }));
   };
 
-  const columns: ColumnDef<Doctor>[] = [
+  const [changeStatus] = useChangeStatusMutation();
+
+  const columns: ColumnDef<Patient>[] = [
     {
       id: "select",
       header: ({ table }) => (
@@ -220,40 +178,38 @@ const Doctors = () => {
               <DropdownMenuItem onClick={() => openViewModal(patient.id)}>
                 View details
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => openEditModal(patient.id)}>
+              {/* <DropdownMenuItem onClick={() => openEditModal(patient.id)}>
                 Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem
+              </DropdownMenuItem> */}
+              {/* <DropdownMenuItem
                 onClick={() => handleDeleteClick(patient.id)}
                 className="text-red-600 hover:bg-red-100 focus:bg-red-100"
               >
                 Delete patient
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
             </DropdownMenuContent>
           </DropdownMenu>
         );
       },
     },
   ];
+
   return (
     <>
       <div className="space-y-6">
         <PageHeader
-          title="Doctors"
-          subtitle="Manage and organize the doctors within your healthcare system"
-          buttonLabel="Add Doctors"
-          icon={<Plus className="h-4 w-4" />}
-          onButtonClick={() => setIsModalOpen(true)}
+          title="Patients"
+          subtitle="Manage and organize the Patients within your healthcare system"
         />
 
         {isLoading ||
         isFetching ||
-        (doctorData && doctorData?.doctors?.length > 0) ||
+        (allPatients && allPatients?.patients?.length > 0) ||
         searchTerm ? (
           <div className="rounded-lg bg-white shadow-sm">
             <DataTable
-              data={doctorData?.doctors ?? []}
-              columns={columns as ColumnDef<IDoctor>[]}
+              data={allPatients?.patients ?? []}
+              columns={columns as ColumnDef<Patient>[]}
               onSearchInputChange={(value) => setSearchTerm(value)}
               isLoading={isLoading}
               isFetching={isFetching}
@@ -270,47 +226,21 @@ const Doctors = () => {
           </div>
         ) : (
           <EmptyState
-            icon={<Plus className="h-6 w-6 text-blue-600" />}
-            title="No doctor found"
+            title="No Patient found"
             description="Get started by creating your first medical specialty. Specialties help categorize and organize your healthcare providers and services."
-            buttonLabel="Create Doctor"
-            onButtonClick={() => setIsModalOpen(true)}
           />
         )}
       </div>
 
-      {/* create modal */}
-      <CreateDoctorModal open={isModalOpen} setOpen={setIsModalOpen} />
-
-      {/* update doctor modal */}
-      {isEditModalOpen && (
-        <EditDoctorModal
-          open={true}
-          setOpen={closeModal}
-          doctorId={doctorIdFromEditParams}
-        />
-      )}
-
-      {/* view doctor modal */}
       {isViewModalOpen && (
-        <ViewDoctorModal
+        <ViewPatientModal
           open={true}
-          setOpen={closeModal}
-          doctorId={doctorIdFromViewParams}
+          setOpen={closeViewModal}
+          patientId={viewId as string}
         />
       )}
-
-      {/* delete modal */}
-      <DeleteDoctorModal
-        id={selectedDoctorId}
-        open={deleteModalOpen}
-        softDeleteMutation={softDeleteDoctor}
-        setOpen={setDeleteModalOpen}
-        hardDeleteMutation={hardDeleteDoctor}
-        entityName="Doctor"
-      />
     </>
   );
 };
 
-export default Doctors;
+export default PatientPage;

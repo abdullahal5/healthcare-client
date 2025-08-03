@@ -46,10 +46,8 @@ const EditDoctorProfile = () => {
   const [removedSpecialties, setRemovedSpecialties] = useState<string[]>([]);
   const fileUploaderRef = useRef<{ reset: () => void }>();
 
-  const { data: allSpecialty, isLoading: specialtyLoading } =
+  const { data: specialtiesData, isLoading: specialtyLoading } =
     useGetAllSpecialtiesQuery({});
-
-  const specialtiesData = allSpecialty;
 
   const handleFormSubmit = async (values: FieldValues) => {
     setLoading(true);

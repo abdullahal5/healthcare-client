@@ -18,7 +18,10 @@ export interface Doctor {
   averageRating: number;
   review: any[];
   doctorSpecialties: DoctorSpecialty[];
+  user: { id: string; status: UserStatus };
 }
+
+export type UserStatus = "ACTIVE" | "BLOCKED" | "DELETED";
 
 export interface DoctorSpecialty {
   specialtiesId: string;

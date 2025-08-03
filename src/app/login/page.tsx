@@ -30,7 +30,6 @@ import {
   loginContainerVariants,
   loginItemVariants,
 } from "@/Transition/login.transition";
-import { formSchema } from "@/schema/login.schema";
 import { z } from "zod";
 import { userLogin } from "@/services/action/login";
 import { toast } from "sonner";

@@ -62,7 +62,7 @@ export function HCModal({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent
         aria-describedby={description ? "modal-description" : undefined}
-        className={`${widthClass} ${className}`}
+        className={`${widthClass} ${className} h-[80vh] max-h-[80vh] overflow-y-auto`}
       >
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>

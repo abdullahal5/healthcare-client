@@ -25,6 +25,7 @@ import {
   containerDoctorViewVariants,
   itemDoctorViewariants,
 } from "@/Transition";
+import { DoctorSpecialties } from "@/types";
 
 const ViewDoctorModal = ({
   open,
@@ -62,7 +63,10 @@ const ViewDoctorModal = ({
             className="flex items-start gap-4"
           >
             <Avatar className="h-24 w-24 border-2 border-primary">
-              <AvatarImage className="object-cover" src={doctor?.profilePhoto} />
+              <AvatarImage
+                className="object-cover"
+                src={doctor?.profilePhoto}
+              />
               <AvatarFallback className="text-2xl font-bold bg-primary/10">
                 {doctor?.name?.charAt(0)}
               </AvatarFallback>
@@ -84,9 +88,7 @@ const ViewDoctorModal = ({
               <div className="flex items-center mt-2 gap-4">
                 <div className="flex items-center gap-1">
                   <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                  <span className="font-medium">
-                    {doctor?.averageRating}
-                  </span>
+                  <span className="font-medium">{doctor?.averageRating}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <DollarSign className="h-4 w-4 text-green-500" />
@@ -195,16 +197,13 @@ const ViewDoctorModal = ({
                 <CardContent>
                   <div className="flex flex-wrap gap-2">
                     {doctor.doctorSpecialties.map(
-                      (specialty: {
-                        id: Key;
-                        specialty: {
-                          name: string;
-                        };
-                      }) => (
-                        <Badge key={specialty.id} variant="secondary">
-                          {specialty.specialty.name}
-                        </Badge>
-                      )
+                      (specialty: DoctorSpecialties) => {
+                        return (
+                          <Badge key={specialty?.specialtiesId} variant="secondary">
+                            {specialty?.specialities?.title}
+                          </Badge>
+                        );
+                      }
                     )}
                   </div>
                 </CardContent>
