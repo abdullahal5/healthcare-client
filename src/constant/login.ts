@@ -1,8 +1,8 @@
 export const defaultCredentials = {
-  superAdmin: {
-    email: "super@admin.com",
-    password: "superadmin",
-  },
+  // superAdmin: {
+  //   email: "super@admin.com",
+  //   password: "superadmin",
+  // },
   admin: {
     email: "admin@gmail.com",
     password: "123456",
@@ -18,7 +18,7 @@ export const defaultCredentials = {
 };
 
 export const roleOptions = [
-  { value: "superAdmin", label: "Super Admin" },
+  // { value: "superAdmin", label: "Super Admin" },
   { value: "admin", label: "Admin" },
   { value: "doctor", label: "Doctor" },
   { value: "patient", label: "Patient" },
