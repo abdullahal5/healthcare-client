@@ -6,6 +6,7 @@ import PatientProfile from "./_components/PatientProfile";
 import { useSearchParams } from "next/navigation";
 import { useGetSingleUserQuery } from "@/redux/api/userApi";
 import { ProfileSkeleton } from "./_components/ProfileSkeletonLoading";
+import AdminProfile from "./_components/AdminProfile";
 
 const Profile = () => {
   const searchParams = useSearchParams();
@@ -20,6 +21,7 @@ const Profile = () => {
 
   const ownerProfile = info.email === userData.email;
 
+
   return (
     <div>
       {role === "doctor" && (
@@ -27,6 +29,9 @@ const Profile = () => {
       )}
       {role === "patient" && (
         <PatientProfile user={userData} ownerProfile={ownerProfile} />
+      )}
+      {role === "admin" && (
+        <AdminProfile user={userData} />
       )}
     </div>
   );

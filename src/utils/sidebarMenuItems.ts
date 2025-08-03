@@ -11,7 +11,6 @@ import {
   LayoutDashboardIcon,
   LucideIcon,
   PenSquare,
-  Star,
   Trophy,
   User,
 } from "lucide-react";
@@ -72,6 +71,11 @@ export const menuItems = (role: UserRole): IRoleMenus[] => {
           path: `${role}/doctors`,
           icon: User,
         },
+        // {
+        //   title: "Prescriptions",
+        //   path: `${role}/prescriptions`,
+        //   icon: FileText,
+        // },
         {
           title: "Patients",
           path: `${role}/patients`,
@@ -86,11 +90,6 @@ export const menuItems = (role: UserRole): IRoleMenus[] => {
           title: "Appointments",
           path: `${role}/appointments`,
           icon: Book,
-        },
-        {
-          title: "Reviews",
-          path: `${role}/reviews`,
-          icon: Star,
         }
       );
       break;
