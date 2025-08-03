@@ -1,3 +1,4 @@
+import BMICalculator from "@/components/elements/HomePage/BMI-calculator/bmi-Calculator";
 import HeroSection from "@/components/elements/HomePage/HeroSection";
 import Specialist from "@/components/elements/HomePage/Specialist/Specialtist";
 import TopRatedDoctors from "@/components/elements/HomePage/TopRatedDoctors/TopRatedDoctors";
@@ -9,6 +10,7 @@ export default function Home() {
       <HeroSection />
       <Specialist />
       <TopRatedDoctors />
+      <BMICalculator />
       <WhyUs />
     </>
   );

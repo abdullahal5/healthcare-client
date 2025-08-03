@@ -4,14 +4,15 @@ import HCFileUploader from "@/components/Forms/HCFileUploader";
 import HCForm from "@/components/Forms/HCForm";
 import HCInput from "@/components/Forms/HCInput";
 import HCSelect from "@/components/Forms/HCSelect";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import {
-  useGetMyProfileQuery,
-  useUpdateMyProfileMutation,
-} from "@/redux/api/myProfile";
+import { useUpdateDoctorMutation } from "@/redux/api/doctorApi";
+import { useGetMyProfileQuery } from "@/redux/api/myProfile";
+import { useGetAllSpecialtiesQuery } from "@/redux/api/specialtiesApi";
 import { itemVariants } from "@/Transition";
+import { DoctorSpecialties } from "@/types";
 import { modifyPayload } from "@/utils/modifyPayload";
 import { motion } from "framer-motion";
 import {
@@ -28,23 +29,43 @@ import {
   Stethoscope,
   Save,
   Loader2,
+  X,
 } from "lucide-react";
 import { useRef, useState } from "react";
 import type { FieldValues } from "react-hook-form";
 import { toast } from "sonner";
 
 const EditDoctorProfile = () => {
-  const [updateMyProfile] = useUpdateMyProfileMutation();
+  const [updateMyProfile] = useUpdateDoctorMutation();
   const {
     data: doctorProfile,
     isLoading,
     isFetching,
   } = useGetMyProfileQuery({});
   const [loading, setLoading] = useState(false);
+  const [removedSpecialties, setRemovedSpecialties] = useState<string[]>([]);
   const fileUploaderRef = useRef<{ reset: () => void }>();
+
+  const { data: allSpecialty, isLoading: specialtyLoading } =
+    useGetAllSpecialtiesQuery({});
+
+  const specialtiesData = allSpecialty;
 
   const handleFormSubmit = async (values: FieldValues) => {
     setLoading(true);
+
+    const selectedSpecialties = values?.specialties || [];
+
+    const addedSpecialties = selectedSpecialties.map((id: string) => ({
+      specialtiesId: id,
+    }));
+
+    const deletedSpecialties = removedSpecialties.map((id) => ({
+      specialtiesId: id,
+      isDeleted: true,
+    }));
+
+    const formattedSpecialties = [...addedSpecialties, ...deletedSpecialties];
     try {
       const {
         name,
@@ -69,6 +90,7 @@ const EditDoctorProfile = () => {
         gender,
         appointmentFee: Number(appointmentFee),
         qualification,
+        specialties: formattedSpecialties,
         currentWorkingPlace,
         designation,
         file,
@@ -76,7 +98,10 @@ const EditDoctorProfile = () => {
 
       const data = modifyPayload(filteredValues);
 
-      const res = await updateMyProfile(data).unwrap();
+      const res = await updateMyProfile({
+        id: doctorProfile?.id,
+        data,
+      }).unwrap();
       if (res.id) {
         toast.success("Profile updated successfully!");
       }
@@ -95,7 +120,29 @@ const EditDoctorProfile = () => {
     { label: "Other", value: "OTHER" },
   ];
 
-  if (isLoading || isFetching) {
+  const specialtyOptions = specialtiesData?.map(
+    (spec: { title: string; id: string; icon: string }) => ({
+      label: spec.title,
+      value: spec.id,
+      icon: spec.icon,
+    })
+  );
+
+  const selectedSpecialtyIds = new Set(
+    doctorProfile?.doctorSpecialties?.map(
+      (spec: DoctorSpecialties) => spec?.specialities?.id
+    ) || []
+  );
+
+  const filteredSpecialtyOptions = specialtyOptions?.filter(
+    (option: any) => !selectedSpecialtyIds.has(option.value)
+  );
+
+  const handleRemoveSpecialty = (specialtyId: string) => {
+    setRemovedSpecialties((prev) => [...prev, specialtyId]);
+  };
+
+  if (isLoading || isFetching || specialtyLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -234,6 +281,60 @@ const EditDoctorProfile = () => {
                       size="lg"
                       icon={Building2}
                     />
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            <motion.div variants={itemVariants}>
+              <Card className="shadow-lg border-0 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20">
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center gap-2 text-xl text-purple-700 dark:text-purple-300">
+                    <UserCheck className="h-5 w-5" />
+                    Specialties
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex gap-2">
+                      <HCSelect
+                        label="Specialties"
+                        name="specialties"
+                        multiple
+                        options={filteredSpecialtyOptions}
+                        placeholder="Select a specialty"
+                        className="flex-1"
+                      />
+                    </div>
+
+                    {/* Display selected specialties with remove option */}
+                    <div className="flex flex-wrap gap-2">
+                      {doctorProfile?.doctorSpecialties
+                        ?.filter(
+                          (specialty: DoctorSpecialties) =>
+                            !removedSpecialties.includes(
+                              specialty.specialities.id
+                            )
+                        )
+                        ?.map((specialty: DoctorSpecialties) => (
+                          <Badge
+                            key={specialty.specialities.id}
+                            variant="outline"
+                            className="px-3 py-1 rounded-full flex items-center gap-2"
+                          >
+                            {specialty.specialities.title}
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleRemoveSpecialty(specialty.specialities.id)
+                              }
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </Badge>
+                        ))}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
