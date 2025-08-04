@@ -117,6 +117,11 @@ export const menuItems = (role: UserRole): IRoleMenus[] => {
     case USER_ROLE.PATIENT:
       roleMenus.push(
         {
+          title: "Dashboard",
+          path: `${role}`,
+          icon: LayoutDashboard,
+        },
+        {
           title: "Appointments",
           path: `${role}/appointments`,
           icon: Book,

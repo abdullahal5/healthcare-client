@@ -1,9 +1,9 @@
-const page = () => {
+const PatientDashboard = () => {
     return (
         <div>
-            
+            patient dahsboard
         </div>
     );
 };
 
-export default page;
+export default PatientDashboard;

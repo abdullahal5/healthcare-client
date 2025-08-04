@@ -201,9 +201,7 @@ export default function LoginPage() {
     },
   });
 
-  const handleRoleChange = (
-    role: "admin" | "doctor" | "patient" | "superAdmin"
-  ) => {
+  const handleRoleChange = (role: "admin" | "doctor" | "patient") => {
     loginForm.reset({
       role,
       email: defaultCredentials[role].email,
@@ -225,7 +223,7 @@ export default function LoginPage() {
     return null;
   };
 
-  const defaultRole = "superAdmin";
+  const defaultRole = "admin";
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-4">
@@ -288,11 +286,7 @@ export default function LoginPage() {
                             size="lg"
                             onChange={(role) =>
                               handleRoleChange(
-                                role as
-                                  | "admin"
-                                  | "doctor"
-                                  | "patient"
-                                  | "superAdmin"
+                                role as "admin" | "doctor" | "patient"
                               )
                             }
                             required

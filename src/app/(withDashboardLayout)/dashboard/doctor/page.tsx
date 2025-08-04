@@ -1,9 +1,9 @@
-const Doctor = () => {
+const DoctorDashbaord = () => {
     return (
         <div>
-            <h1>Doctor Dashboard</h1>
+            doctor dashboard
         </div>
     );
 };
 
-export default Doctor;
+export default DoctorDashbaord;
