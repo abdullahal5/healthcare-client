@@ -253,8 +253,8 @@ const PatientDashboard = () => {
         >
           <div className="space-y-2">
             <div className="flex items-center gap-3">
-              <Heart className="h-10 w-10 text-red-500" />
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-red-500 to-pink-600 bg-clip-text text-transparent">
+              <Heart className="h-10 w-10 text-blue-500" />
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                 My Health Dashboard
               </h1>
             </div>
@@ -287,7 +287,7 @@ const PatientDashboard = () => {
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+          className="grid -z-10 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
         >
           {stats.map((stat, index) => (
             <motion.div

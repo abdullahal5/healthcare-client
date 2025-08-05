@@ -574,10 +574,18 @@ export default function DoctorContentWithFilter() {
                         </div>
 
                         <div className="grid grid-cols-2 gap-3 mt-auto">
-                          <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium">
-                            Book Now
-                          </Button>
-                          <Link className="w-full" href={`/doctors/${doctor.id}`}>
+                          <Link
+                            className="w-full"
+                            href={`/doctors/${doctor.id}#booking`}
+                          >
+                            <Button className="bg-gradient-to-r w-full from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium">
+                              Book Now
+                            </Button>
+                          </Link>
+                          <Link
+                            className="w-full"
+                            href={`/doctors/${doctor.id}`}
+                          >
                             <Button
                               variant="outline"
                               className="border-blue-500 w-full text-blue-500 hover:bg-blue-50 font-medium bg-transparent"

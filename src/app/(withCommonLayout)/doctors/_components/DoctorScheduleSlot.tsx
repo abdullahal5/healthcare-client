@@ -1,14 +1,9 @@
 "use client";
+
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Calendar as CalendarIcon, ChevronRight, Clock } from "lucide-react";
-import { motion } from "framer-motion";
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CalendarIcon, ChevronRight, Clock, CheckCircle } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Separator } from "@radix-ui/react-separator";
 import { cn } from "@/lib/utils";
 import { useState, useMemo } from "react";
@@ -16,7 +11,7 @@ import { useGetAllDoctorSchedulesQuery } from "@/redux/api/doctorScheduleApi";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
-import { DoctorSchedules, Schedule } from "@/types";
+import type { DoctorSchedules, Schedule } from "@/types";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
@@ -34,10 +29,8 @@ const DoctorScheduleSlot = ({ id }: { id: string }) => {
   const { data, isLoading, isFetching } = useGetAllDoctorSchedulesQuery({
     doctorId: id,
   });
-
   const [createAppointment, { isLoading: createAppointmentLoading }] =
     useCreateAppointmentMutation();
-
   const [initialPayment, { isLoading: initialPaymentLoading }] =
     useInitialPaymentMutation();
 
@@ -100,10 +93,8 @@ const DoctorScheduleSlot = ({ id }: { id: string }) => {
           doctorId: id,
           scheduleId: selectedSlot.id,
         }).unwrap();
-
         if (res.id) {
           const response = await initialPayment(res.id).unwrap();
-
           if (response.paymentUrl) {
             if (response.paymentUrl && typeof window !== "undefined") {
               window.location.replace(response.paymentUrl);
@@ -124,32 +115,43 @@ const DoctorScheduleSlot = ({ id }: { id: string }) => {
     const diff = endDate.diff(startDate, "minute");
     const hours = Math.floor(diff / 60);
     const minutes = diff % 60;
-
     return `${hours > 0 ? `${hours}h ` : ""}${
       minutes > 0 ? `${minutes}m` : ""
     }`.trim();
   };
 
-  //   TODO: Here works still remaining
   const handleDateSelect = (date: Date | undefined) => {
     if (!date) return;
-
-    console.log(date);
+    const dateString = dayjs(date).format("YYYY-MM-DD");
+    if (availableDates.includes(dateString)) {
+      setSelectedDate(dateString);
+      setSelectedSlot(null);
+      setCalendarOpen(false);
+    }
   };
 
   if (isLoading || isFetching) {
     return (
-      <div className="flex items-center justify-center h-[50vh]">
-        <div className="animate-pulse flex space-x-4">
-          <div className="flex-1 space-y-6 py-1">
-            <div className="h-8 bg-slate-200 rounded w-3/4"></div>
-            <div className="space-y-3">
-              <div className="grid grid-cols-3 gap-4">
-                <div className="h-12 bg-slate-200 rounded col-span-1"></div>
-                <div className="h-12 bg-slate-200 rounded col-span-1"></div>
-                <div className="h-12 bg-slate-200 rounded col-span-1"></div>
-              </div>
-              <div className="h-48 bg-slate-200 rounded"></div>
+      <div className="p-6">
+        <div className="animate-pulse space-y-6">
+          <div className="space-y-3">
+            <div className="h-6 bg-slate-200 rounded w-1/3"></div>
+            <div className="h-4 bg-slate-200 rounded w-2/3"></div>
+          </div>
+          <div className="space-y-4">
+            <div className="h-6 bg-slate-200 rounded w-1/4"></div>
+            <div className="grid grid-cols-3 gap-3">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="h-12 bg-slate-200 rounded"></div>
+              ))}
+            </div>
+          </div>
+          <div className="space-y-4">
+            <div className="h-6 bg-slate-200 rounded w-1/3"></div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="h-16 bg-slate-200 rounded"></div>
+              ))}
             </div>
           </div>
         </div>
@@ -158,14 +160,24 @@ const DoctorScheduleSlot = ({ id }: { id: string }) => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <Card className="shadow-lg">
-        <CardHeader>
-          <CardTitle className="text-blue-600">Book Appointment</CardTitle>
+    <div className="relative">
+      {/* Main Content */}
+      <div
+        className={cn(
+          "transition-all duration-300",
+          selectedSlot ? "pb-32" : "pb-6"
+        )}
+      >
+        <CardHeader className="pb-4">
+          <CardTitle className="text-blue-600 flex items-center gap-2">
+            <CalendarIcon className="h-5 w-5" />
+            Book Your Appointment
+          </CardTitle>
           <p className="text-sm text-gray-500">
             Select your preferred date and time for consultation
           </p>
         </CardHeader>
+
         <CardContent className="space-y-6">
           {/* Date Selection */}
           <div className="space-y-4">
@@ -219,18 +231,24 @@ const DoctorScheduleSlot = ({ id }: { id: string }) => {
             </div>
           </div>
 
-          <Separator />
+          <Separator className="my-6" />
 
           {/* Time Slots */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-gray-700">
+              <h3 className="font-semibold text-gray-700 flex items-center gap-2">
+                <Clock className="h-4 w-4 text-blue-500" />
                 Available Time Slots
               </h3>
               {selectedDate && (
-                <p className="text-sm text-gray-600">
-                  {formatDate(selectedDate)}
-                </p>
+                <div className="text-right">
+                  <p className="text-sm font-medium text-gray-700">
+                    {formatDate(selectedDate)}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {schedulesByDate[selectedDate]?.length || 0} slots available
+                  </p>
+                </div>
               )}
             </div>
 
@@ -333,104 +351,126 @@ const DoctorScheduleSlot = ({ id }: { id: string }) => {
                 })}
               </div>
             ) : (
-              <div className="text-center py-8 space-y-2">
-                <p className="text-gray-500">
-                  {availableDates.length === 0
-                    ? "No available time slots for this doctor"
-                    : "No available time slots for the selected date"}
-                </p>
-                {availableDates.length === 0 && (
-                  <Button variant="ghost" className="text-blue-600">
-                    Check back later
-                  </Button>
-                )}
+              <div className="text-center py-12 space-y-4">
+                <div className="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center">
+                  <Clock className="h-8 w-8 text-gray-400" />
+                </div>
+                <div className="space-y-2">
+                  <p className="text-gray-500 font-medium">
+                    {availableDates.length === 0
+                      ? "No available appointments"
+                      : "No slots available for selected date"}
+                  </p>
+                  <p className="text-sm text-gray-400">
+                    {availableDates.length === 0
+                      ? "Please check back later or contact the clinic"
+                      : "Please select a different date"}
+                  </p>
+                </div>
               </div>
             )}
           </div>
         </CardContent>
+      </div>
+
+      {/* Sticky Booking Summary - Only show when slot is selected */}
+      <AnimatePresence>
         {selectedSlot && (
-          <CardFooter className="flex flex-col gap-4 border-t pt-6">
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="w-full rounded-lg bg-blue-50 p-4 border border-blue-100"
-            >
-              <h4 className="font-semibold text-blue-900">
-                Appointment Summary
-              </h4>
-              <div className="mt-2 space-y-1 text-sm text-blue-800">
-                <div className="flex justify-between">
-                  <span>Doctor:</span>
-                  <span className="font-medium">
-                    {schedules[0]?.doctor.name}
-                  </span>
+          <motion.div
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            className="fixed border-t border-neutral-300 bottom-0 left-0 right-0 z-50 bg-blue-100/90 shadow-2xl"
+          >
+            <div className="max-w-7xl mx-auto p-4">
+              <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
+                {/* Appointment Summary */}
+                <div className="flex-1 bg-blue-50 rounded-lg p-4 border border-blue-100">
+                  <h4 className="font-semibold text-blue-900 mb-2 flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4" />
+                    Appointment Summary
+                  </h4>
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
+                    <div>
+                      <span className="text-blue-700 font-medium">Date:</span>
+                      <p className="text-blue-800 font-semibold">
+                        {dayjs(selectedSlot.startDateTime).format(
+                          "MMM D, YYYY"
+                        )}
+                      </p>
+                    </div>
+                    <div>
+                      <span className="text-blue-700 font-medium">Time:</span>
+                      <p className="text-blue-800 font-semibold">
+                        {formatTime(selectedSlot.startDateTime)}
+                      </p>
+                    </div>
+                    <div>
+                      <span className="text-blue-700 font-medium">
+                        Duration:
+                      </span>
+                      <p className="text-blue-800 font-semibold">
+                        {calculateDuration(
+                          selectedSlot.startDateTime,
+                          selectedSlot.endDateTime
+                        )}
+                      </p>
+                    </div>
+                    <div>
+                      <span className="text-blue-700 font-medium">Fee:</span>
+                      <p className="text-green-600 font-bold text-lg">
+                        ${schedules[0]?.doctor.appointmentFee}
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex justify-between">
-                  <span>Date:</span>
-                  <span className="font-medium">
-                    {formatDate(selectedSlot.startDateTime)}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Time:</span>
-                  <span className="font-medium">
-                    {formatTime(selectedSlot.startDateTime)} to{" "}
-                    {formatTime(selectedSlot.endDateTime)}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Consultation Fee:</span>
-                  <span className="font-medium">
-                    ${schedules[0]?.doctor.appointmentFee}
-                  </span>
+
+                {/* Book Button */}
+                <div className="w-full lg:w-auto">
+                  <Button
+                    onClick={handleBookAppointment}
+                    className="w-full lg:w-auto h-14 px-8 text-lg font-semibold shadow-lg bg-blue-600 hover:bg-blue-700 transition-all"
+                    size="lg"
+                    disabled={createAppointmentLoading || initialPaymentLoading}
+                  >
+                    {createAppointmentLoading || initialPaymentLoading ? (
+                      <>
+                        <svg
+                          className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                        Processing...
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle className="h-5 w-5 mr-2" />
+                        Confirm Booking - ${schedules[0]?.doctor.appointmentFee}
+                      </>
+                    )}
+                  </Button>
                 </div>
               </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.5 }}
-              className="w-full"
-            >
-              <Button
-                onClick={handleBookAppointment}
-                className="w-full h-14 text-lg font-semibold shadow-lg bg-blue-600 hover:bg-blue-700"
-                size="lg"
-                disabled={createAppointmentLoading || initialPaymentLoading}
-              >
-                {createAppointmentLoading || initialPaymentLoading ? (
-                  <>
-                    <svg
-                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    Processing...
-                  </>
-                ) : (
-                  `Confirm Booking - $${schedules[0]?.doctor.appointmentFee}`
-                )}
-              </Button>
-            </motion.div>
-          </CardFooter>
+            </div>
+          </motion.div>
         )}
-      </Card>
+      </AnimatePresence>
     </div>
   );
 };

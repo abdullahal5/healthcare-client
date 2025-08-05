@@ -5,8 +5,14 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { MapPin, Clock } from "lucide-react";
 import Link from "next/link";
-import { buttonVariants, cardVariants, containerVariants, titleVariants } from "@/Transition/topRatedDoctor.transition";
+import {
+  buttonVariants,
+  cardVariants,
+  containerVariants,
+  titleVariants,
+} from "@/Transition/topRatedDoctor.transition";
 import { Doctor } from "@/types";
+import { Card, CardContent } from "@/components/ui/card";
 
 const DoctorCard = ({ doctors }: { doctors: Doctor[] }) => {
   return (
@@ -34,57 +40,66 @@ const DoctorCard = ({ doctors }: { doctors: Doctor[] }) => {
         viewport={{ once: true, amount: 0.1 }}
       >
         {doctors?.map((doctor) => (
-          <motion.div
+          <Card
             key={doctor.id}
-            variants={cardVariants}
-            className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col h-full"
+            className="group bg-white/90 backdrop-blur-sm border-0 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden h-full"
           >
-            <div className="relative h-56 w-full flex-shrink-0">
+            <div className="relative h-48 overflow-hidden">
               <Image
-                src={doctor.profilePhoto || "/placeholder-doctor-bg.png"}
+                width={400}
+                height={200}
+                src={
+                  doctor.profilePhoto ||
+                  "/placeholder.svg?height=200&width=400&text=Doctor"
+                }
                 alt={`Dr. ${doctor.name}`}
-                fill
-                className="object-cover"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
             </div>
 
-            <div className="p-5 flex flex-col flex-grow">
-              <div className="mb-5">
-                <h3 className="text-xl font-bold text-slate-800">
+            <CardContent className="p-5 flex flex-col flex-grow">
+              <div className="mb-4">
+                <h3 className="text-xl font-bold text-gray-800 mb-1">
                   Dr. {doctor.name}
                 </h3>
-                <p className="text-xs mt-1">{doctor.qualification}</p>
+                <p className="text-sm text-blue-600 font-medium">
+                  {doctor.qualification}
+                </p>
               </div>
 
-              <div className="space-y-2 mb-4">
-                <div className="flex text-sm items-center text-slate-600">
-                  <MapPin className="w-4 h-4 mr-2 text-slate-400" />
+              <div className="space-y-2 mb-4 flex-grow">
+                <div className="flex items-center text-sm text-gray-600">
+                  <span className="w-4 h-4 mr-2">📍</span>
                   <span>{doctor.currentWorkingPlace}</span>
                 </div>
-                <div className="flex text-sm items-center text-slate-600">
-                  <Clock className="w-4 h-4 mr-2 text-slate-400" />
-                  <span>450 Consultations</span>
+                <div className="flex items-center text-sm text-gray-600">
+                  <span className="w-4 h-4 mr-2">💰</span>
+                  <span>${doctor.appointmentFee || "N/A"}</span>
+                </div>
+                <div className="flex items-center text-sm text-gray-600">
+                  <span className="w-4 h-4 mr-2">⭐</span>
+                  <span>4.8 (450 reviews)</span>
                 </div>
               </div>
 
-              {/* Buttons container pushed to bottom */}
-              <div className="mt-auto grid grid-cols-2 gap-3">
-                <Button
-                  className="bg-blue-500 hover:bg-blue-600 text-white font-medium"
-                  size="lg"
-                >
-                  Book Now
-                </Button>
-                <Button
-                  variant="outline"
-                  className="border-blue-500 text-blue-500 hover:text-blue-600 font-medium"
-                  size="lg"
-                >
-                  View Profile
-                </Button>
+              <div className="grid grid-cols-2 gap-3 mt-auto">
+                <Link className="w-full" href={`/doctors/${doctor.id}#booking`}>
+                  <Button className="bg-gradient-to-r w-full from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium">
+                    Book Now
+                  </Button>
+                </Link>
+                <Link className="w-full" href={`/doctors/${doctor.id}`}>
+                  <Button
+                    variant="outline"
+                    className="border-blue-500 w-full text-blue-500 hover:bg-blue-50 font-medium bg-transparent"
+                  >
+                    View Profile
+                  </Button>
+                </Link>
               </div>
-            </div>
-          </motion.div>
+            </CardContent>
+          </Card>
         ))}
       </motion.div>
       <motion.div
