@@ -1,16 +1,19 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import PaymentStatusDisplay from "./_components/PaymentStatusDisplay";
 
-interface PaymentStatusPageProps {
-  searchParams: Promise<{ status?: string; transaction_id?: string }>;
-}
+type PaymentStatusPageProps = {
+  searchParams: Promise<{
+    status?: string;
+    transaction_id?: string;
+  }>;
+};
 
-export default async function PaymentStat6usPage({
+export default async function PaymentStatusPage({
   searchParams,
 }: PaymentStatusPageProps) {
   try {
-    
     const params = await searchParams;
     const status = params.status || "unknown";
     const transactionId = params.transaction_id;
@@ -23,7 +26,10 @@ export default async function PaymentStat6usPage({
     return (
       <div className="min-h-screen">
         <Suspense fallback={<PaymentLoadingFallback />}>
-          <PaymentStatusDisplay status={status} transactionId={"1234"} />
+          <PaymentStatusDisplay
+            status={status}
+            transactionId={transactionId || "1234"}
+          />
         </Suspense>
       </div>
     );
@@ -45,3 +51,5 @@ function PaymentLoadingFallback() {
     </div>
   );
 }
+
+export const dynamic = "force-dynamic";
