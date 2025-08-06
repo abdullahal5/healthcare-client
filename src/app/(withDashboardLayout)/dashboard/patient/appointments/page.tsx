@@ -113,9 +113,9 @@ const Appointments = () => {
     if (id) {
       const response = await initialPayment(id).unwrap();
 
-      if (response.paymentUrl) {
-        if (response.paymentUrl && typeof window !== "undefined") {
-          window.location.replace(response.paymentUrl);
+      if (response.Url) {
+        if (response.Url && typeof window !== "undefined") {
+          window.location.replace(response.Url);
         } else {
           toast.error("Payment URL not available or window undefined.");
         }

@@ -16,7 +16,6 @@ const DoctorReviews = ({
 }) => {
   const ratingDistribution = [5, 4, 3, 2, 1].map((rating) => {
     const count = reviews.filter((r) => Math.floor(r.rating) === rating).length;
-    console.log(count);
     return {
       rating,
       count,

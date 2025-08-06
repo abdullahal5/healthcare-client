@@ -74,8 +74,6 @@ const PatientDashboard = () => {
     isFetching,
   } = useDashboardDataQuery({});
 
-  console.log(dashboardData);
-
   if (isLoading || isFetching) {
     return (
       <div className="flex items-center justify-center h-40">

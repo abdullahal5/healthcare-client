@@ -53,8 +53,6 @@ const ViewPatientModal = ({
 
   const patient = singlePatientInfo;
 
-  console.log(patient);
-
   return (
     <div>
       <HCModal width="lg" open={open} setOpen={setOpen} title="Patient Details">

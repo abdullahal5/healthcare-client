@@ -1,5 +1,6 @@
 "use client";
 
+import type React from "react";
 import { motion } from "framer-motion";
 import {
   CheckCircle,
@@ -13,7 +14,6 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -36,13 +36,24 @@ interface StatusConfig {
   pulseEffect?: boolean;
 }
 
-const PaymentStatusDisplay = () => {
-  const searchParams = useSearchParams();
-  const status = searchParams.get("status") || "unknown";
+interface PaymentStatusDisplayProps {
+  status: string;
+  transactionId?: string;
+}
+
+const PaymentStatusDisplay = ({
+  status,
+  transactionId,
+}: PaymentStatusDisplayProps) => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    setIsVisible(true);
+    // Add a small delay to ensure smooth animation
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, []);
 
   const statusConfigs: Record<string, StatusConfig> = {
@@ -130,7 +141,6 @@ const PaymentStatusDisplay = () => {
               className={cn("h-10 w-10 opacity-10", config.textColorClass)}
             />
           </div>
-
           <CardHeader className="relative z-10 text-center">
             <motion.div
               initial={{ scale: 0, rotate: -30 }}
@@ -152,7 +162,6 @@ const PaymentStatusDisplay = () => {
               {config.title}
             </CardTitle>
           </CardHeader>
-
           <CardContent className="relative z-10 space-y-6">
             <p
               className={cn(
@@ -163,58 +172,63 @@ const PaymentStatusDisplay = () => {
               {config.message}
             </p>
 
+            {transactionId && (
+              <div className="text-center">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Transaction ID:{" "}
+                  <span className="font-mono">{transactionId}</span>
+                </p>
+              </div>
+            )}
+
             <div className="flex flex-col space-y-3">
-              <Link href="/" passHref>
-                <Button
-                  size="lg"
-                  variant={config.buttonVariant}
-                  className="w-full gap-2 text-base font-semibold"
-                >
+              <Button
+                asChild
+                size="lg"
+                variant={config.buttonVariant}
+                className="w-full gap-2 text-base font-semibold"
+              >
+                <Link href="/">
                   <Home className="h-5 w-5" />
                   {config.buttonText}
-                </Button>
-              </Link>
+                </Link>
+              </Button>
 
               {config.showRetry && (
-                <Link href="/checkout" passHref>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="w-full gap-2 text-base font-semibold"
-                  >
+                <Button
+                  asChild
+                  size="lg"
+                  variant="outline"
+                  className="w-full gap-2 text-base font-semibold bg-transparent"
+                >
+                  <Link href="/checkout">
                     <ArrowLeft className="h-5 w-5" />
                     Back to Checkout
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               )}
 
               {config.showContact && (
-                <Link href="/contact" passHref>
-                  <Button
-                    size="lg"
-                    variant="ghost"
-                    className={cn(
-                      "w-full gap-2 text-base font-semibold",
-                      config.textColorClass
-                    )}
-                  >
-                    Contact Support
-                  </Button>
-                </Link>
+                <Button
+                  asChild
+                  size="lg"
+                  variant="ghost"
+                  className={cn(
+                    "w-full gap-2 text-base font-semibold",
+                    config.textColorClass
+                  )}
+                >
+                  <Link href="/contact">Contact Support</Link>
+                </Button>
               )}
             </div>
           </CardContent>
-
           <div className="absolute bottom-4 left-4">
             <CreditCard
               className={cn("h-8 w-8 opacity-10", config.textColorClass)}
             />
           </div>
         </Card>
-
-        <div className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
-          Transaction ID: {searchParams.get("transaction_id") || "N/A"}
-        </div>
       </motion.div>
     </div>
   );
