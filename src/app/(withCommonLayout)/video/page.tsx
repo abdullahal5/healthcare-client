@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import VideoCall from "./_components/VideoCall";
 
 type VideoCallingPageProps = {
