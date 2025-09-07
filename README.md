@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🏥 Health Care Platform
 
-# Getting Started
+An **Healthcare management web application** that connects **Admins, Doctors, and Patients** in a seamless ecosystem. Patients can **book appointments**, consult doctors via **video calls**, and receive **digital prescriptions**, while doctors manage schedules and admins oversee the entire system.
 
-First, run the development server:
+Built with **Next.js, TypeScript, Prisma, PostgreSQL, Node.js, and Express.js**, the platform ensures **security, scalability, and real-time updates**.
+
+---
+
+## 📸 Screenshot
+
+![App Screenshot](public/image.png)
+
+---
+
+## ✨ Features
+
+- ✅ **Role-Based Access Control (RBAC)** – Separate dashboards and permissions for Admin, Doctor, and Patient.
+- ✅ **Doctor Scheduling System** – Real-time availability with appointment bookings.
+- ✅ **Video Consultations** – Integrated video call system for remote checkups.
+- ✅ **Digital Prescriptions** – Doctors can create and share prescriptions online.
+- ✅ **Secure Payments** – Appointment-to-payment workflow for patients.
+- ✅ **Modern & Responsive UI** – Clean, mobile-friendly design with Tailwind CSS and Framer Motion.
+
+---
+
+## 🚀 Tech Stack
+
+- **Frontend:** Next.js + TypeScript
+- **Styling:** Tailwind CSS, shadcn/ui, Framer Motion
+- **State Management:** React Redux, React Hooks
+- **Video Calls:** ZegoCloud UIKit
+- **Backend:** Node.js + Express.js + Prisma + PostgreSQL
+- **Auth & Validation:** JWT, Zod, Clerk (if integrated)
+- **Others:** Recharts for analytics, Cloudinary for media storage
+
+---
+
+## 📦 Installation & Setup
+
+### 1. Clone the Repository
 
 ```bash
-npm run dev
+git clone https://github.com/abdullahal5/healthcare-client.git
+cd healthcare-client
+npm install
 # or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+yarn install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🔑 Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+Create a `.env` file in the root of the project and add the following variables (use your own secure values instead of these demo placeholders):
 
-## Learn More
+```env
+NEXT_PUBLIC_BACKEND_API_URL=https://healthcare-server-pi.vercel.app/api/v1
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## 🌐 Backend
+- Server Repo: [Link](https://github.com/abdullahal5/healthcare-server)
+- Live API: healthcare-server-pi.vercel.app
